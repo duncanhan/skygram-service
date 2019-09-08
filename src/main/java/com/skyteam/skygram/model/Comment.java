@@ -1,8 +1,5 @@
 package com.skyteam.skygram.model;
 
-import sun.security.krb5.internal.SeqNumber;
-import sun.security.x509.SerialNumber;
-
 import java.util.ArrayList;
 
 public class Comment {
