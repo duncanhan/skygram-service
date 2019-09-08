@@ -12,4 +12,6 @@ public interface UserService {
     List<User> getListUsers();
 
     String createUser(UserDTO userDTO);
+
+    List<UserDTO> search(String term );
 }

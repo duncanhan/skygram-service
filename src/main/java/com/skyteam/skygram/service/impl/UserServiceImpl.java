@@ -5,6 +5,8 @@ import com.skyteam.skygram.model.User;
 import com.skyteam.skygram.repository.UserRepository;
 import com.skyteam.skygram.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,5 +37,10 @@ public class UserServiceImpl implements UserService {
         user.setPassword(userDTO.getPassword());
         userRepository.save(user);
         return user.getEmail();
+    }
+
+    @Override
+    public List<UserDTO> search(String term) {
+       return userRepository.search(term);
     }
 }
