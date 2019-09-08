@@ -6,10 +6,13 @@ import com.skyteam.skygram.dto.UserDTO;
 import com.skyteam.skygram.model.User;
 import com.skyteam.skygram.service.UserService;
 import io.swagger.annotations.ApiOperation;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/users")
@@ -36,4 +39,11 @@ public class UserController {
     public Response search(@RequestParam("term") String term) {
         return ResponseBuilder.buildSuccess( userService.search(term));
     }
+
+    @PostMapping("/post")
+    public Response post(@RequestParam("files") MultipartFile[] files, @RequestParam("user") String user,
+        @RequestParam("user") String title){
+        return ResponseBuilder.buildSuccess(userService.createPost(user,title,files));
+    }
+
 }
