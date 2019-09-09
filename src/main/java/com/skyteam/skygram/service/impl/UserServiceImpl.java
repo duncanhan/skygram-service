@@ -4,8 +4,6 @@ import com.skyteam.skygram.core.Response;
 import com.skyteam.skygram.core.ResponseBuilder;
 import com.skyteam.skygram.core.ResponseCode;
 import com.skyteam.skygram.dto.UserDTO;
-import com.skyteam.skygram.model.Comment;
-import com.skyteam.skygram.model.Media;
 import com.skyteam.skygram.model.Photo;
 import com.skyteam.skygram.model.Post;
 import com.skyteam.skygram.model.User;
