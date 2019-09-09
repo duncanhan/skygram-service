@@ -1,5 +1,6 @@
 package com.skyteam.skygram.service;
 
+import com.skyteam.skygram.core.Response;
 import com.skyteam.skygram.dto.UserDTO;
 import com.skyteam.skygram.model.User;
 
@@ -16,5 +17,5 @@ public interface UserService {
 
     List<UserDTO> search(String term );
 
-    String createPost(String user, String title, MultipartFile[] files, String localtion);
+    Response createPost(String user, String title, MultipartFile[] files, String localtion);
 }

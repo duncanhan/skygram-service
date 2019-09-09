@@ -3,7 +3,9 @@ package com.skyteam.skygram.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document
 public class Post {
   private String id;
   private String title;
@@ -20,9 +22,9 @@ public class Post {
     this.title = title;
     this.date = date;
     this.location = location;
-    this.comments = new ArrayList<Comment>();
-    this.likes = new ArrayList<String>();
-    this.media = new ArrayList<Media>();
+    this.comments = new ArrayList<>();
+    this.likes = new ArrayList<>();
+    this.media = new ArrayList<>();
   }
 
   public String getId() {

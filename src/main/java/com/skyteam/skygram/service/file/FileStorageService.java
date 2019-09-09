@@ -1,9 +1,11 @@
 package com.skyteam.skygram.service.file;
 
 import com.skyteam.skygram.core.FileStorageProperties;
+import com.skyteam.skygram.model.Photo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,36 +32,30 @@ public class FileStorageService {
     }
   }
 
-  public String storeFile(MultipartFile file) {
+  public Pair<Boolean,Pair<String,String>> storeFile(MultipartFile file) {
     // Normalize file name
     String fileName = StringUtils.cleanPath(file.getOriginalFilename());
     try {
+      // check if file format is allowed
+      if(!isAllowedFormat(fileName)) {
+        return Pair.of(false, Pair.of(fileName, "Sorry! fileformat is not allowed"));
+      }
       // Check if the file's name contains invalid characters
       if(fileName.contains("..")) {
-        throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+        return Pair.of(false, Pair.of(fileName,"Sorry! Filename contains invalid path sequence " + fileName));
       }
-
       // Copy file to the target location (Replacing existing file with the same name)
+      //@todo provide a url to the file server in the application.properties file, for now we are using local
       Path targetLocation = this.fileStorageLocation.resolve(fileName);
       Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-      return fileName;
+      return Pair.of(true, Pair.of(fileName,"File Uploaded"));
     } catch (IOException ex) {
       throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
     }
   }
 
-  public Resource loadFileAsResource(String fileName) {
-    try {
-      Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-      Resource resource = new UrlResource(filePath.toUri());
-      if(resource.exists()) {
-        return resource;
-      } else {
-        throw new MyFileNotFoundException("File not found " + fileName);
-      }
-    } catch (MalformedURLException ex) {
-      throw new MyFileNotFoundException("File not found " + fileName, ex);
-    }
+  private boolean isAllowedFormat(String filename){
+    Photo p = new Photo(filename);
+    return !p.getType().equals(FileType.OTHER);
   }
 }

@@ -42,8 +42,9 @@ public class UserController {
 
     @PostMapping("/post")
     public Response post(@RequestParam("files") MultipartFile[] files, @RequestParam("user") String user,
-        @RequestParam("user") String title){
-        return ResponseBuilder.buildSuccess(userService.createPost(user,title,files));
+        @RequestParam("user") String title,
+        @RequestParam("localtion") String localtion){
+        return ResponseBuilder.buildSuccess(userService.createPost(user,title,files,localtion));
     }
 
 }
