@@ -1,5 +1,8 @@
 package com.skyteam.skygram.core;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 public class ResponseBuilder {
     private static final String DEFAULT_SUCCESS_MESSAGE = "success";
 
@@ -25,7 +28,7 @@ public class ResponseBuilder {
 
     public static Response buildFail(String message) {
         return new Response()
-                .setCode(ResponseCode.FAIL)
+                .setCode(ResponseCode.BAD_REQUEST)
                 .setMessage(message);
     }
 
@@ -33,5 +36,19 @@ public class ResponseBuilder {
         return new Response()
                 .setCode(code)
                 .setMessage(message);
+    }
+
+    public static Response buildFail(ResponseCode code, String message, Object errors) {
+        return new Response()
+                .setCode(code)
+                .setMessage(message)
+                .setErrors(errors);
+    }
+
+    public static Response buildFail(ResponseCode code, String message, String error) {
+        return new Response()
+                .setCode(code)
+                .setMessage(message)
+                .setErrors(Collections.singletonList(error));
     }
 }
