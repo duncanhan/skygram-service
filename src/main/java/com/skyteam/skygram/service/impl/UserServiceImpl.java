@@ -110,7 +110,4 @@ public class UserServiceImpl implements UserService {
         return ResponseBuilder.buildSuccess("Post created successfully");
     }
 
-
-
-
 }
