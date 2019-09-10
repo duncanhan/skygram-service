@@ -14,9 +14,4 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
   @Autowired
   PostServiceImp postService;
-
-  @GetMapping("/byuser")
-  public Response getPostsByUser(@RequestParam("username") String username){
-    return ResponseBuilder.buildSuccess(postService.getPostsByUser(username));
-  }
 }
