@@ -6,6 +6,7 @@ import com.skyteam.skygram.model.User;
 import com.skyteam.skygram.service.PostsService;
 import com.skyteam.skygram.service.UserService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,7 @@ public class UserController {
     @Autowired
     private PostsService postsService;
 
+    @ApiOperation(value = "Get list user", authorizations = { @Authorization(value="apiKey") })
     @GetMapping
     public Response getListUsers() {
         List<User> users = userService.getListUsers();
