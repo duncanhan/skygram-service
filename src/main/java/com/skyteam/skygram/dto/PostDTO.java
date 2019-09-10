@@ -14,6 +14,18 @@ public class PostDTO {
   private List<Comment> comments;
   private List<String> likes;
   private List<Media> media;
+  private String username;
+  private String[] hashtags;
+
+  public PostDTO(String id, String username, String title, LocalDateTime date, String location, List<Media> media, String[] hashtags) {
+    this.id = id;
+    this.title = title;
+    this.date = date;
+    this.location = location;
+    this.media = media;
+    this.username = username;
+    this.hashtags = hashtags;
+  }
 
   public String getId() {
     return id;
@@ -69,5 +81,21 @@ public class PostDTO {
 
   public void setMedia(List<Media> media) {
     this.media = media;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public String[] getHashtags() {
+    return hashtags;
+  }
+
+  public void setHashtags(String[] hashtags) {
+    this.hashtags = hashtags;
   }
 }
