@@ -8,17 +8,17 @@ public class Comment {
     private int userId;
     private int postId;
     private String comment;
-    private ArrayList<User> likes;
+//    private ArrayList<User> likes;
 
     public Comment(int userId, int postId,String comment){
         this.userId = userId;
         this.postId = postId;
         this.comment = comment;
-        likes = new ArrayList<User>();
+//        likes = new ArrayList<User>();
     }
 
     public boolean like(User u){
-        likes.add(u);
+//        likes.add(u);
         return true;
     }
 

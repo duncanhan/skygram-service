@@ -27,11 +27,11 @@ public class User implements Serializable {
     @Field("last_name")
     private String lastName;
 
-    @Indexed(unique = true)
+    @Indexed(unique = true, sparse = true)
     @Field("email")
     private String email;
 
-    @Indexed(unique = true)
+    @Indexed(unique = true, sparse = true)
     @Field("phone")
     private String phone;
 

@@ -8,6 +8,7 @@ import com.skyteam.skygram.dto.UserRequestDTO;
 import com.skyteam.skygram.security.JwtTokenProvider;
 import com.skyteam.skygram.security.JwtUserDetailsService;
 import com.skyteam.skygram.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,18 +35,18 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
+    @ApiOperation(value = "Login")
     @PostMapping("/login")
     public Response login(@Valid @RequestBody LoginDTO loginDTO) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getAccount(), loginDTO.getPassword()));
-
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(loginDTO.getAccount());
         String token = jwtTokenProvider.generateJwtToken(userDetails);
-
         return ResponseBuilder.buildSuccess(token);
     }
 
+    @ApiOperation(value = "Register an account")
     @PostMapping("/register")
-    public Response register(@RequestBody @NotNull UserRequestDTO userRequestDTO) {
+    public Response register(@Valid @RequestBody @NotNull UserRequestDTO userRequestDTO) {
         UserDTO userDTO = userService.addUser(userRequestDTO);
         return ResponseBuilder.buildSuccess(userDTO);
     }

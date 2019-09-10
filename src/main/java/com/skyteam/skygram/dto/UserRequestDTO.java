@@ -3,26 +3,27 @@ package com.skyteam.skygram.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 public class UserRequestDTO {
 
-    @NotBlank
+    @NotBlank(message = "Username is required")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "First Name is required")
     @JsonProperty("first_name")
     private String firstName;
 
-    @NotBlank
+    @NotBlank(message = "Last Name is required")
     @JsonProperty("last_name")
     private String lastName;
 
+    @NotBlank(message = "Email is required")
     @NotBlank
     private String email;
 
     private String phone;
 
+    @NotBlank(message = "Password is required")
     @NotBlank
     private String password;
 
