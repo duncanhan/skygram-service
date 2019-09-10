@@ -4,6 +4,7 @@ import com.skyteam.skygram.core.Response;
 import com.skyteam.skygram.core.ResponseBuilder;
 import com.skyteam.skygram.core.ResponseCode;
 import com.skyteam.skygram.dto.UserDTO;
+import com.skyteam.skygram.dto.UserRequestDTO;
 import com.skyteam.skygram.model.Photo;
 import com.skyteam.skygram.model.Post;
 import com.skyteam.skygram.model.User;
@@ -13,19 +14,25 @@ import com.skyteam.skygram.repository.UserRepository;
 import com.skyteam.skygram.service.UserService;
 import com.skyteam.skygram.service.file.FileStorageService;
 import com.skyteam.skygram.service.file.FileType;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     PostRepository postRepository;
@@ -34,8 +41,26 @@ public class UserServiceImpl implements UserService {
     private FileStorageService fileStorageServ;
 
     @Override
-    public Long addUser(User user) {
-        return null;
+    public UserDTO addUser(UserRequestDTO userRequestDTO) {
+        User user = new User();
+        user.setUsername(userRequestDTO.getUsername());
+        user.setFirstName(userRequestDTO.getFirstName());
+        user.setLastName(userRequestDTO.getLastName());
+        user.setEmail(userRequestDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
+        user.setSignupDate(LocalDateTime.now());
+        user.setRoles(Collections.singletonList("USER"));
+        userRepository.save(user);
+        return new UserDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getBirthday(),
+                user.getSignupDate()
+        );
     }
 
     @Override
@@ -44,20 +69,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String createUser(UserDTO userDTO) {
-        User user = new User();
-        user.setEmail(userDTO.getEmail());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setUsername(userDTO.getUsername());
-        user.setPassword(userDTO.getPassword());
-        userRepository.save(user);
-        return user.getEmail();
-    }
-
-    @Override
     public List<UserDTO> search(String term) {
-       return userRepository.search(term);
+        return userRepository.search(term);
     }
 
     @Override
