@@ -2,7 +2,6 @@ package com.skyteam.skygram.controller;
 
 import com.skyteam.skygram.core.Response;
 import com.skyteam.skygram.core.ResponseBuilder;
-import com.skyteam.skygram.dto.UserDTO;
 import com.skyteam.skygram.model.User;
 import com.skyteam.skygram.service.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -23,12 +22,6 @@ public class UserController {
     public Response getListUsers() {
         List<User> users = userService.getListUsers();
         return ResponseBuilder.buildSuccess(users);
-    }
-
-    @PostMapping
-    public Response createUser(@RequestBody UserDTO userDTO) {
-        String email = userService.createUser(userDTO);
-        return ResponseBuilder.buildSuccess(email);
     }
 
     @ApiOperation(value= "Search user profile",
