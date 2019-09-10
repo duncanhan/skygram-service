@@ -3,6 +3,7 @@ package com.skyteam.skygram.controller;
 import com.skyteam.skygram.core.Response;
 import com.skyteam.skygram.core.ResponseBuilder;
 import com.skyteam.skygram.model.User;
+import com.skyteam.skygram.service.PostsService;
 import com.skyteam.skygram.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PostsService postsService;
 
     @GetMapping
     public Response getListUsers() {
@@ -40,5 +44,10 @@ public class UserController {
             System.out.println(uploadedFile.getOriginalFilename());
         }
         return ResponseBuilder.buildSuccess(userService.createPost(user,title,files,localtion));
+    }
+
+    @GetMapping("/{username}/posts")
+    public Response getPostsByUser(@RequestParam("username") String username){
+        return ResponseBuilder.buildSuccess(postsService.getPostsByUser(username));
     }
 }
