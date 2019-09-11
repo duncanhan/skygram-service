@@ -3,6 +3,7 @@ package com.skyteam.skygram.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -12,9 +13,11 @@ public class UserDTO {
 
     private String username;
 
+    @NotBlank(message = "First Name is required")
     @JsonProperty("first_name")
     private String firstName;
 
+    @NotBlank(message = "Last Name is required")
     @JsonProperty("last_name")
     private String lastName;
 
@@ -26,6 +29,9 @@ public class UserDTO {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime signupDate;
+
+    public UserDTO() {
+    }
 
     public UserDTO(String id, String username, String firstName, String lastName, String email, String phone, LocalDate birthday, LocalDateTime signupDate) {
         this.id = id;

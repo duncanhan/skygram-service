@@ -1,126 +1,140 @@
 package com.skyteam.skygram.model;
 
 import com.mongodb.lang.NonNull;
-import com.mongodb.lang.Nullable;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="posts")
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Document(collection = "posts")
 public class Post {
 
-  public Post(String id, String username, String title, LocalDateTime date, String location, List<Media> media, String[] hashtags) {
-    this.id = id;
-    this.title = title;
-    this.date = date;
-    this.location = location;
-    this.media = media;
-    this.username = username;
-    this.hashtags = hashtags;
-  }
+    @Id
+    private String id;
 
-  @Id
-  private String id;
+    @NonNull
+    @Field(value = "username")
+    private String username;
 
-  @Field
-  @NonNull
-  private String username;
+    @Field(value = "title")
+    private String title;
 
-  @Field
-  private String title;
+    @NotNull
+    @Field(value = "posted_date")
+    private LocalDateTime postedDate;
 
-  @Field
-  private LocalDateTime date;
+    @Field(value = "last_modified_date")
+    private LocalDateTime lastModifiedDate;
 
-  @Field
-  private String location;
+    @Field(value = "hashtags")
+    private List<String> hashtags;
 
-  @Field
-  @Nullable
-  private String[] hashtags;
+    @Field(value = "location")
+    private String[] location;
 
-  @Field
-  @Nullable
-  private List<Comment> comments;
+    @Field(value = "media")
+    private List<String> medias;
 
-  @Nullable
-  private List<String> likes;
+    @DBRef(lazy = true)
+    private List<Comment> comments;
 
-  private List<Media> media;
+    @Field(value = "likes")
+    private List<String> likes;
 
-  public String getId() {
-    return id;
-  }
+    public Post(String id, String username, String title, @NotNull LocalDateTime postedDate, LocalDateTime lastModifiedDate, List<String> hashtags, String[] location, List<String> medias, List<Comment> comments, List<String> likes) {
+        this.id = id;
+        this.username = username;
+        this.title = title;
+        this.postedDate = postedDate;
+        this.lastModifiedDate = lastModifiedDate;
+        this.hashtags = hashtags;
+        this.location = location;
+        this.medias = medias;
+        this.comments = comments;
+        this.likes = likes;
+    }
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    public String getId() {
+        return id;
+    }
 
-  public String getTitle() {
-    return title;
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
+    public String getUsername() {
+        return username;
+    }
 
-  public LocalDateTime getDate() {
-    return date;
-  }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-  public void setDate(LocalDateTime date) {
-    this.date = date;
-  }
+    public String getTitle() {
+        return title;
+    }
 
-  public String getLocation() {
-    return location;
-  }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-  public void setLocation(String location) {
-    this.location = location;
-  }
+    public LocalDateTime getPostedDate() {
+        return postedDate;
+    }
 
-  public List<Comment> getComments() {
-    return comments;
-  }
+    public void setPostedDate(LocalDateTime postedDate) {
+        this.postedDate = postedDate;
+    }
 
-  public void setComments(List<Comment> comments) {
-    this.comments = comments;
-  }
+    public LocalDateTime getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-  public List<String> getLikes() {
-    return likes;
-  }
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-  public void setLikes(List<String> likes) {
-    this.likes = likes;
-  }
+    public List<String> getHashtags() {
+        return hashtags;
+    }
 
-  public List<Media> getMedia() {
-    return media;
-  }
+    public void setHashtags(List<String> hashtags) {
+        this.hashtags = hashtags;
+    }
 
-  public void setMedia(List<Media> media) {
-    this.media = media;
-  }
+    public String[] getLocation() {
+        return location;
+    }
 
+    public void setLocation(String[] location) {
+        this.location = location;
+    }
 
-  public String getUsername() {
-    return username;
-  }
+    public List<String> getMedias() {
+        return medias;
+    }
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
+    public void setMedias(List<String> medias) {
+        this.medias = medias;
+    }
 
-  public String[] getHashtags() {
-    return hashtags;
-  }
+    public List<Comment> getComments() {
+        return comments;
+    }
 
-  public void setHashtags(String[] hashtags) {
-    this.hashtags = hashtags;
-  }
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<String> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<String> likes) {
+        this.likes = likes;
+    }
 }

@@ -1,7 +1,7 @@
 package com.skyteam.skygram.model;
 
 import com.skyteam.skygram.dto.UserDTO;
-import com.skyteam.skygram.dto.UserRequestDTO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "users")
@@ -47,22 +48,28 @@ public class User implements Serializable {
     @Field("roles")
     private List<String> roles;
 
+    @Field("followers")
+    private List<String> followers;
+
     public User() {
+        this.followers = new ArrayList<>();
     }
 
-    public User(String id, String username, String firstName, String lastName,
-                String email, String phone, String password, LocalDate birthday,
-                LocalDateTime signupDate, List<String> roles) {
-        this.id = id;
-        this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phone = phone;
-        this.password = password;
-        this.birthday = birthday;
-        this.signupDate = signupDate;
-    }
+//    public User(String id, String username, String firstName, String lastName,
+//                String email, String phone, String password, LocalDate birthday,
+//                LocalDateTime signupDate, List<String> roles, List<String> followers) {
+//        this.id = id;
+//        this.username = username;
+//        this.firstName = firstName;
+//        this.lastName = lastName;
+//        this.email = email;
+//        this.phone = phone;
+//        this.password = password;
+//        this.birthday = birthday;
+//        this.signupDate = signupDate;
+//        this.roles = roles;
+//        this.followers
+//    }
 
     public String getId() {
         return id;
@@ -142,5 +149,13 @@ public class User implements Serializable {
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
+    }
+
+    public List<String> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(List<String> followers) {
+        this.followers = followers;
     }
 }

@@ -45,33 +45,33 @@ public class PostServiceImp implements PostsService {
     }
 
     String id = user.substring(0,2)+""+System.currentTimeMillis();
-    Post post = new Post(id, user, title, LocalDateTime.now(), location,new ArrayList<>(),hashtags);
-    int counter = 1;
-    String errorMessage = null;
-
-    for(MultipartFile file:files){
-      Pair<Boolean, Pair<String,String>> result  = fileStorageServ.storeFile(file);
-      if(!result.getFirst()){
-        errorMessage = result.getSecond().getSecond();
-        continue;
-      }
-
-      Photo photo = new Photo(result.getSecond().getFirst());
-      if(photo.getType().equals(FileType.PHOTO)){
-        photo.setId(id+"_"+counter);
-        post.getMedia().add(photo);
-      }else{
-        Video video = new Video(result.getSecond().getFirst());
-        video.setId(id+"_"+counter);
-        post.getMedia().add(video);
-      }
-      counter+=1;
-    }
-
-    if(post.getMedia().isEmpty()){
-      return ResponseBuilder.buildFail(ResponseCode.INTERNAL_SERVER_ERROR,errorMessage);
-    }
-    postRepository.save(post);
+//    Post post = new Post(id, user, title, LocalDateTime.now(), location,new ArrayList<>(),hashtags);
+//    int counter = 1;
+//    String errorMessage = null;
+//
+//    for(MultipartFile file:files){
+//      Pair<Boolean, Pair<String,String>> result  = fileStorageServ.storeFile(file);
+//      if(!result.getFirst()){
+//        errorMessage = result.getSecond().getSecond();
+//        continue;
+//      }
+//
+//      Photo photo = new Photo(result.getSecond().getFirst());
+//      if(photo.getType().equals(FileType.PHOTO)){
+//        photo.setId(id+"_"+counter);
+//        post.getMedia().add(photo);
+//      }else{
+//        Video video = new Video(result.getSecond().getFirst());
+//        video.setId(id+"_"+counter);
+//        post.getMedia().add(video);
+//      }
+//      counter+=1;
+//    }
+//
+//    if(post.getMedia().isEmpty()){
+//      return ResponseBuilder.buildFail(ResponseCode.INTERNAL_SERVER_ERROR,errorMessage);
+//    }
+//    postRepository.save(post);
     return ResponseBuilder.buildSuccess("Post created successfully");
   }
 }

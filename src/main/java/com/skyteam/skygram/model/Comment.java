@@ -1,56 +1,87 @@
 package com.skyteam.skygram.model;
 
-import java.util.ArrayList;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Document(collection = "comments")
 public class Comment {
 
-    private int commentId;
-    private int userId;
-    private int postId;
-    private String comment;
-//    private ArrayList<User> likes;
+    @Id
+    private String id;
 
-    public Comment(int userId, int postId,String comment){
-        this.userId = userId;
+    @Field(value = "text")
+    private String text;
+
+    @Field(value = "date")
+    private LocalDateTime date;
+
+    @Field(value = "author")
+    private String author;
+
+    @Field(value = "post_id")
+    private String postId;
+
+    @Field(value = "likes")
+    private List<String> likes;
+
+    public Comment(String id, String text, LocalDateTime date, String author, String postId, List<String> likes) {
+        this.id = id;
+        this.text = text;
+        this.date = date;
+        this.author = author;
         this.postId = postId;
-        this.comment = comment;
-//        likes = new ArrayList<User>();
+        this.likes = likes;
     }
 
-    public boolean like(User u){
-//        likes.add(u);
-        return true;
+    public String getId() {
+        return id;
     }
 
-    public int getCommentId() {
-        return commentId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setCommentId(int commentId) {
-        this.commentId = commentId;
+    public String getText() {
+        return text;
     }
 
-    public int getUserId() {
-        return userId;
+    public void setText(String text) {
+        this.text = text;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public LocalDateTime getDate() {
+        return date;
     }
 
-    public int getPostId() {
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getPostId() {
         return postId;
     }
 
-    public void setPostId(int postId) {
+    public void setPostId(String postId) {
         this.postId = postId;
     }
 
-    public String getComment() {
-        return comment;
+    public List<String> getLikes() {
+        return likes;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setLikes(List<String> likes) {
+        this.likes = likes;
     }
 }

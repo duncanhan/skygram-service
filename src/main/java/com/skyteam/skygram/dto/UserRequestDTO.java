@@ -3,6 +3,7 @@ package com.skyteam.skygram.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
 
 public class UserRequestDTO {
 
@@ -18,24 +19,25 @@ public class UserRequestDTO {
     private String lastName;
 
     @NotBlank(message = "Email is required")
-    @NotBlank
     private String email;
 
     private String phone;
 
+    private LocalDate birthday;
+
     @NotBlank(message = "Password is required")
-    @NotBlank
     private String password;
 
     public UserRequestDTO() {
     }
 
-    public UserRequestDTO(String username, String firstName, String lastName, String email, String phone, String password) {
+    public UserRequestDTO(@NotBlank(message = "Username is required") String username, @NotBlank(message = "First Name is required") String firstName, @NotBlank(message = "Last Name is required") String lastName, @NotBlank(message = "Email is required") String email, String phone, LocalDate birthday, @NotBlank(message = "Password is required") String password) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
+        this.birthday = birthday;
         this.password = password;
     }
 
@@ -77,6 +79,14 @@ public class UserRequestDTO {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
     }
 
     public String getPassword() {

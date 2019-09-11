@@ -2,14 +2,23 @@ package com.skyteam.skygram.service;
 
 import com.skyteam.skygram.dto.UserDTO;
 import com.skyteam.skygram.dto.UserRequestDTO;
-import com.skyteam.skygram.model.User;
+import com.skyteam.skygram.security.UserPrincipal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface UserService {
 
     UserDTO addUser(UserRequestDTO userRequestDTO);
 
-    List<User> getListUsers();
+    Page<UserDTO> getListUsers(Pageable page);
 
     List<UserDTO> search(String term );
+
+    void updateUser(UserPrincipal currentUser, UserDTO userDTO);
+
+    void follow(UserPrincipal currentUser, String username);
+
+    void unfollow(UserPrincipal currentUser, String username);
 }
