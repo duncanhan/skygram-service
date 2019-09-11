@@ -1,7 +1,5 @@
 package com.skyteam.skygram.model;
 
-import com.skyteam.skygram.dto.UserDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,8 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Document(collection = "users")
 public class User implements Serializable {
@@ -49,10 +48,14 @@ public class User implements Serializable {
     private List<String> roles;
 
     @Field("followers")
-    private List<String> followers;
+    private Set<String> followers;
+
+    @Field("followings")
+    private Set<String> followings;
 
     public User() {
-        this.followers = new ArrayList<>();
+        this.followers = new HashSet<>();
+        this.followings = new HashSet<>();
     }
 
 //    public User(String id, String username, String firstName, String lastName,
@@ -151,11 +154,31 @@ public class User implements Serializable {
         this.roles = roles;
     }
 
-    public List<String> getFollowers() {
+    public Set<String> getFollowers() {
         return followers;
     }
 
-    public void setFollowers(List<String> followers) {
+    public void setFollowers(Set<String> followers) {
         this.followers = followers;
+    }
+
+    public Set<String> getFollowings() {
+        return followings;
+    }
+
+    public void setFollowings(Set<String> followings) {
+        this.followings = followings;
+    }
+
+    public void follow(String userId) {
+        this.followings.add(userId);
+    }
+
+    public void followedBy(String userId) {
+        this.followers.add(userId);
+    }
+
+    public void unfollow(String userId) {
+        this.followings.remove(userId);
     }
 }
