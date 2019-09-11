@@ -92,4 +92,11 @@ public class UserServiceImpl implements UserService {
         follower.unfollow(followee.getId());
         userRepository.save(follower);
     }
+
+    @Override
+    public UserDTO getUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+        return Mapper.map(user, UserDTO.class);
+    }
 }

@@ -21,4 +21,6 @@ public interface UserService {
     void follow(UserPrincipal currentUser, String username);
 
     void unfollow(UserPrincipal currentUser, String username);
+
+    UserDTO getUser(String username);
 }

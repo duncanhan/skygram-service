@@ -2,15 +2,19 @@ package com.skyteam.skygram.model;
 
 import com.mongodb.lang.NonNull;
 import com.mongodb.lang.Nullable;
-import java.util.ArrayList;
+
+import java.util.*;
+
+import com.skyteam.skygram.dto.CommentRequestDTO;
+import com.skyteam.skygram.exception.ResourceNotFoundException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.util.CollectionUtils;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Document(collection = "posts")
 public class Post {
@@ -33,23 +37,23 @@ public class Post {
     private LocalDateTime lastModifiedDate;
 
     @Field(value = "hashtags")
-    private List<String> hashtags;
+    private Set<String> hashtags;
 
     @Field(value = "location")
-    private String[] location;
+    private Location location;
 
     @Field(value = "media")
     private List<Media> medias;
 
-    @DBRef(lazy = true)
     @Nullable
+    @Field(value = "comments")
     private List<Comment> comments;
 
-    @Field(value = "likes")
     @Nullable
-    private List<String> likes;
+    @Field(value = "likes")
+    private Set<String> likes;
 
-    public Post(String author, String title, List<String> hashtags, String[] location) {
+    public Post(String author, String title, Set<String> hashtags, Location location) {
         this.author = author;
         this.title = title;
         this.postedDate = LocalDateTime.now();
@@ -58,7 +62,7 @@ public class Post {
         this.location = location;
         this.medias = new ArrayList<>();
         this.comments = new ArrayList<>();
-        this.likes = new ArrayList<>();
+        this.likes = new HashSet<>();
     }
 
     public String getId() {
@@ -101,19 +105,23 @@ public class Post {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public List<String> getHashtags() {
+    public Set<String> getHashtags() {
         return hashtags;
     }
 
-    public void setHashtags(List<String> hashtags) {
+    public void setHashtags(Set<String> hashtags) {
         this.hashtags = hashtags;
     }
 
-    public String[] getLocation() {
+    public void setHashtags(String[] hashtags) {
+        this.hashtags = new HashSet<>(Arrays.asList(hashtags));
+    }
+
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String[] location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
@@ -133,11 +141,53 @@ public class Post {
         this.comments = comments;
     }
 
-    public List<String> getLikes() {
+    public Set<String> getLikes() {
         return likes;
     }
 
-    public void setLikes(List<String> likes) {
+    public void setLikes(Set<String> likes) {
         this.likes = likes;
+    }
+
+    public void addComment(Comment comment) {
+        if (CollectionUtils.isEmpty(this.comments)) {
+            this.comments = new ArrayList<>();
+        }
+        this.comments.add(comment);
+    }
+
+    public void updateComment(String commentId, CommentRequestDTO commentRequestDTO) {
+        if (CollectionUtils.isEmpty(this.comments)) return;
+        for (Comment comment : this.comments) {
+            if (comment.getId().equals(comment)) {
+                comment.setText(commentRequestDTO.getText());
+                comment.setLastModifiedDate(LocalDateTime.now());
+            }
+        }
+    }
+
+    public void deleteComment(String commentId) throws ResourceNotFoundException {
+        if (CollectionUtils.isEmpty(this.comments)) return;
+        for (Comment comment : this.comments) {
+            if (comment.getId() != null && comment.getId().toString().equals(commentId)) {
+                this.comments.remove(comment);
+                return;
+            }
+        }
+        throw new ResourceNotFoundException("Comment", "id", commentId);
+    }
+
+    public void likedBy(String userId) {
+        if (this.likes == null) {
+            this.likes = new HashSet<>();
+        }
+        this.likes.add(userId);
+    }
+
+    public void unlikeBy(String userId) {
+        if (this.likes == null) {
+            this.likes = new HashSet<>();
+        }
+        this.likes.remove(userId);
     }
 }

@@ -1,6 +1,5 @@
 package com.skyteam.skygram.core;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class ResponseBuilder {

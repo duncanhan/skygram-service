@@ -7,7 +7,6 @@ import com.skyteam.skygram.dto.UserDTO;
 import com.skyteam.skygram.exception.AppException;
 import com.skyteam.skygram.security.CurrentUser;
 import com.skyteam.skygram.security.UserPrincipal;
-import com.skyteam.skygram.service.PostsService;
 import com.skyteam.skygram.service.UserService;
 import com.skyteam.skygram.util.PageUtil;
 import io.swagger.annotations.ApiOperation;
@@ -26,9 +25,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private PostsService postsService;
 
     @ApiOperation(value = "Get list user", authorizations = {@Authorization(value = "apiKey")})
     @GetMapping
@@ -64,5 +60,11 @@ public class UserController {
         }
         userService.unfollow(currentUser, username);
         return ResponseBuilder.buildSuccess();
+    }
+    @ApiOperation(value = "Get user profile", authorizations = {@Authorization(value = "apiKey")})
+    @GetMapping("/{username}")
+    public Response getUserProfile(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                   @Valid @PathVariable("username") @NotBlank(message = "Username is required") String username) {
+        return ResponseBuilder.buildSuccess(userService.getUser(username));
     }
 }
