@@ -75,30 +75,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void follow(UserPrincipal currentUser, String username) {
-        User user = this.get(currentUser.getId());
-        if (userRepository.existsByUsername(username)) {
-            user.getFollowers().add(userRepository.findByUsername(username).get().getId());
-            userRepository.save(user);
-        } else {
-            throw new ResourceNotFoundException("User", "username", username);
-        }
+        User follower = this.get(currentUser.getId());
+        User followee = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+        follower.follow(followee.getId());
+        followee.followedBy(follower.getId());
+        userRepository.save(followee);
+        userRepository.save(follower);
     }
 
     @Override
     public void unfollow(UserPrincipal currentUser, String username) {
-        User user = this.get(currentUser.getId());
-        if (userRepository.existsByUsername(username)) {
-            if (!CollectionUtils.isEmpty(user.getFollowers())) {
-                for (String follower : user.getFollowers()) {
-                    if (follower.equals(currentUser.getId())) {
-                        user.getFollowers().remove(follower);
-                        userRepository.save(user);
-                        break;
-                    }
-                }
-            }
-        } else {
-            throw new ResourceNotFoundException("User", "username", username);
-        }
+        User follower = this.get(currentUser.getId());
+        User followee = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+        follower.unfollow(followee.getId());
+        userRepository.save(follower);
     }
 }

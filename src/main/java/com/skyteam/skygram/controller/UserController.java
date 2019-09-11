@@ -56,7 +56,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "Unfollow an user", authorizations = {@Authorization(value = "apiKey")})
-    @DeleteMapping("/{username}/follow")
+    @PostMapping("/{username}/unfollow")
     public Response unfollow(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                              @Valid @PathVariable("username") @NotBlank(message = "Username is required") String username) {
         if (currentUser.getUsername().equals(username)) {

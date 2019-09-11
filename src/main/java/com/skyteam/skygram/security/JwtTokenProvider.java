@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Component
@@ -75,7 +77,11 @@ public class JwtTokenProvider {
     public String generateJwtToken(UserDetails userDetails) {
         final Date createdDate = clock.now();
         final Date expirationDate = calculateExpirationDate(createdDate);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("first_name", ((UserPrincipal) userDetails).getFirstName());
+        claims.put("last_name", ((UserPrincipal) userDetails).getLastName());
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(createdDate)
                 .setExpiration(expirationDate)
