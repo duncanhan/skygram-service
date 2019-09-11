@@ -1,6 +1,8 @@
 package com.skyteam.skygram.model;
 
 import com.mongodb.lang.NonNull;
+import com.mongodb.lang.Nullable;
+import java.util.ArrayList;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,8 +19,8 @@ public class Post {
     private String id;
 
     @NonNull
-    @Field(value = "username")
-    private String username;
+    @Field(value = "author")
+    private String author;
 
     @Field(value = "title")
     private String title;
@@ -37,25 +39,26 @@ public class Post {
     private String[] location;
 
     @Field(value = "media")
-    private List<String> medias;
+    private List<Media> medias;
 
     @DBRef(lazy = true)
+    @Nullable
     private List<Comment> comments;
 
     @Field(value = "likes")
+    @Nullable
     private List<String> likes;
 
-    public Post(String id, String username, String title, @NotNull LocalDateTime postedDate, LocalDateTime lastModifiedDate, List<String> hashtags, String[] location, List<String> medias, List<Comment> comments, List<String> likes) {
-        this.id = id;
-        this.username = username;
+    public Post(String author, String title, List<String> hashtags, String[] location) {
+        this.author = author;
         this.title = title;
-        this.postedDate = postedDate;
-        this.lastModifiedDate = lastModifiedDate;
+        this.postedDate = LocalDateTime.now();
+        this.lastModifiedDate = LocalDateTime.now();
         this.hashtags = hashtags;
         this.location = location;
-        this.medias = medias;
-        this.comments = comments;
-        this.likes = likes;
+        this.medias = new ArrayList<>();
+        this.comments = new ArrayList<>();
+        this.likes = new ArrayList<>();
     }
 
     public String getId() {
@@ -66,12 +69,12 @@ public class Post {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getTitle() {
@@ -114,11 +117,11 @@ public class Post {
         this.location = location;
     }
 
-    public List<String> getMedias() {
+    public List<Media> getMedias() {
         return medias;
     }
 
-    public void setMedias(List<String> medias) {
+    public void setMedias(List<Media> medias) {
         this.medias = medias;
     }
 

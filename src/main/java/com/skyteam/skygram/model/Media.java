@@ -1,8 +1,10 @@
 package com.skyteam.skygram.model;
 
 import com.skyteam.skygram.service.file.FileType;
+import org.springframework.data.annotation.Id;
 
 public abstract class Media {
+    @Id
     private String id;
     private String url;
     private String fileFormat;

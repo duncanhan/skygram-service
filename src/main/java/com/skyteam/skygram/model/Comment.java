@@ -7,25 +7,19 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Document(collection = "comments")
+//@Document(collection = "comments")
 public class Comment {
 
-    @Id
     private String id;
 
-    @Field(value = "text")
     private String text;
 
-    @Field(value = "date")
     private LocalDateTime date;
 
-    @Field(value = "author")
     private String author;
 
-    @Field(value = "post_id")
     private String postId;
 
-    @Field(value = "likes")
     private List<String> likes;
 
     public Comment(String id, String text, LocalDateTime date, String author, String postId, List<String> likes) {

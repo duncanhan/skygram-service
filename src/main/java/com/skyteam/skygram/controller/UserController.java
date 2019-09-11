@@ -65,16 +65,4 @@ public class UserController {
         userService.unfollow(currentUser, username);
         return ResponseBuilder.buildSuccess();
     }
-
-//    @ApiOperation(value= "Search user profile",
-//        notes = "Returns a list of users that match the search")
-//    @GetMapping("/search")
-//    public Response search(@RequestParam("term") String term) {
-//        return ResponseBuilder.buildSuccess( userService.search(term));
-//    }
-//
-//    @GetMapping("/{username}/posts")
-//    public Response getPostsByUser(@PathVariable String username){
-//        return ResponseBuilder.buildSuccess(postsService.getPostsByUser(username));
-//    }
 }

@@ -4,6 +4,7 @@ import com.skyteam.skygram.core.Response;
 import com.skyteam.skygram.core.ResponseBuilder;
 import com.skyteam.skygram.core.ResponseCode;
 import com.skyteam.skygram.dto.PostDTO;
+import com.skyteam.skygram.exception.AppException;
 import com.skyteam.skygram.model.Photo;
 import com.skyteam.skygram.model.Post;
 import com.skyteam.skygram.model.Video;
@@ -13,6 +14,7 @@ import com.skyteam.skygram.service.file.FileStorageService;
 import com.skyteam.skygram.service.file.FileType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,40 +40,42 @@ public class PostServiceImp implements PostsService {
 
 
   @Override
-  public Response createPost(String user, String title, MultipartFile[] files, String location, String[] hashtags) {
+  public String createPost(String user, String title, MultipartFile[] files, String[] location, List<String> hashtags) {
     if(files.length==0){
-      return ResponseBuilder
-          .buildFail(ResponseCode.INTERNAL_SERVER_ERROR,"Please chose some files");
+//      return ResponseBuilder
+//          .buildFail(ResponseCode.INTERNAL_SERVER_ERROR,"Please chose some files");
+      throw new AppException("Please chose some files");
     }
 
-    String id = user.substring(0,2)+""+System.currentTimeMillis();
-//    Post post = new Post(id, user, title, LocalDateTime.now(), location,new ArrayList<>(),hashtags);
-//    int counter = 1;
-//    String errorMessage = null;
-//
-//    for(MultipartFile file:files){
-//      Pair<Boolean, Pair<String,String>> result  = fileStorageServ.storeFile(file);
-//      if(!result.getFirst()){
-//        errorMessage = result.getSecond().getSecond();
-//        continue;
-//      }
-//
-//      Photo photo = new Photo(result.getSecond().getFirst());
-//      if(photo.getType().equals(FileType.PHOTO)){
-//        photo.setId(id+"_"+counter);
-//        post.getMedia().add(photo);
-//      }else{
-//        Video video = new Video(result.getSecond().getFirst());
-//        video.setId(id+"_"+counter);
-//        post.getMedia().add(video);
-//      }
-//      counter+=1;
-//    }
-//
-//    if(post.getMedia().isEmpty()){
-//      return ResponseBuilder.buildFail(ResponseCode.INTERNAL_SERVER_ERROR,errorMessage);
-//    }
-//    postRepository.save(post);
-    return ResponseBuilder.buildSuccess("Post created successfully");
+    Post post = new Post( user, title, hashtags,location);
+    int counter = 1;
+    String errorMessage = null;
+
+    for(MultipartFile file:files){
+      Pair<Boolean, Pair<String,String>> result  = fileStorageServ.storeFile(file);
+      if(!result.getFirst()){
+        errorMessage = result.getSecond().getSecond();
+        continue;
+      }
+
+      postRepository.save(post);
+
+      Photo photo = new Photo(result.getSecond().getFirst());
+      if(photo.getType().equals(FileType.PHOTO)){
+        photo.setId(post.getId()+"_"+counter);
+        post.getMedias().add(photo);
+      }else{
+        Video video = new Video(result.getSecond().getFirst());
+        video.setId(post.getId()+"_"+counter);
+        post.getMedias().add(video);
+      }
+      counter+=1;
+    }
+
+    if(post.getMedias().isEmpty()){
+      throw new AppException("Please add an image");
+    }
+    postRepository.save(post);
+    return post.getId();
   }
 }
