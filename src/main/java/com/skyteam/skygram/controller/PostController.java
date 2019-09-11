@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -26,18 +25,8 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @ApiOperation(value = "Post", authorizations = {@Authorization(value = "apiKey")})
-    @RequestMapping(value = {"/"}, method = {RequestMethod.POST}, consumes = {"multipart/form-data"})
-    public Response post(@RequestParam("files") MultipartFile file, @RequestParam("user") String user,
-                         @RequestParam("title") String title,
-                         @RequestParam("localtion") String[] localtion,
-                         @RequestParam("hashtags") String[] hashtags) {
-        MultipartFile[] files = {file};
-        return ResponseBuilder.buildSuccess(postService.createPost(user, title, files, localtion, Arrays.asList(hashtags)));
-    }
-
-    @ApiOperation(value = "Post", authorizations = {@Authorization(value = "apiKey")})
-    @RequestMapping(value = {"/post"}, method = {RequestMethod.POST}, consumes = {"multipart/form-data"})
+    @ApiOperation(value = "Create a post", authorizations = {@Authorization(value = "apiKey")})
+    @PostMapping(consumes = {"multipart/form-data"})
     public Response post(@ApiIgnore @CurrentUser UserPrincipal currentUser, @RequestParam("files") MultipartFile file,
                          @RequestParam("title") String title,
                          @RequestParam("localtion") String[] localtion,
@@ -73,9 +62,9 @@ public class PostController {
     }
 
     @ApiOperation(value = "Update comment", authorizations = {@Authorization(value = "apiKey")})
-    @PostMapping("/{postId}/comments/{commentId}")
+    @PutMapping("/{id}/comments/{commentId}")
     public Response commentPost(@ApiIgnore @CurrentUser UserPrincipal currentUser,
-                                @PathVariable("postId") String postId,
+                                @PathVariable("id") String postId,
                                 @PathVariable("commentId") String commentId,
                                 @Valid @RequestBody CommentRequestDTO commentRequestDTO) {
         postService.updateComment(currentUser, postId, commentId, commentRequestDTO);
@@ -83,9 +72,9 @@ public class PostController {
     }
 
     @ApiOperation(value = "Delete a comment", authorizations = {@Authorization(value = "apiKey")})
-    @DeleteMapping("/{postId}/comments/{commentId}")
+    @DeleteMapping("/{id}/comments/{commentId}")
     public Response deleteComment(@ApiIgnore @CurrentUser UserPrincipal currentUser,
-                                  @PathVariable("postId") String postId,
+                                  @PathVariable("id") String postId,
                                   @PathVariable("commentId") String commentId) {
         postService.deleteComment(currentUser, postId, commentId);
         return ResponseBuilder.buildSuccess();
