@@ -10,8 +10,9 @@
     </parent>
     <groupId>com.skyteam</groupId>
     <artifactId>skygram</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>SkyGram</name>
+    <packaging>jar</packaging>
     <description>SkyGram project</description>
 
     <properties>
@@ -76,10 +77,31 @@
     </dependencies>
 
     <build>
+        <finalName>skygram-api</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.12</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <repository>toandc/skygram-api</repository>
+                    <tag>${project.version}</tag>
+                    <buildArgs>
+                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
             </plugin>
         </plugins>
     </build>
