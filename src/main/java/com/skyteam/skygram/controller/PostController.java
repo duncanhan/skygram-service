@@ -31,8 +31,8 @@ public class PostController {
     public Response post(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                          @Valid @RequestPart("media") @NotNull(message = "Please choose at least one photo/video") @NotBlank(message = "Please choose at least one photo/video") MultipartFile file,
                          @RequestPart("title") String title,
-                         @RequestParam("location") String[] location,
-                         @RequestParam("hashtags") String[] hashtags) throws IOException {
+                         @RequestParam(value = "location", required = false) String[] location,
+                         @RequestParam(value = "hashtags", required = false) String[] hashtags) throws IOException {
         MultipartFile[] files = {file};
         return ResponseBuilder.buildSuccess(postService.createPost(currentUser, title, files, location, hashtags));
     }
@@ -43,8 +43,8 @@ public class PostController {
                                @PathVariable("id") String postId,
                                @RequestPart("title") String title,
                                @RequestPart("media") MultipartFile file,
-                               @RequestParam("location") String[] location,
-                               @RequestParam("hashtags") String[] hashtags) throws IOException {
+                               @RequestParam(value = "location", required = false) String[] location,
+                               @RequestParam(value = "hashtags", required = false) String[] hashtags) throws IOException {
         postService.updatePost(currentUser, postId, title, new MultipartFile[]{file}, location, hashtags);
         return ResponseBuilder.buildSuccess("Post is updated", null);
     }
