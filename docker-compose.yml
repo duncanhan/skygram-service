@@ -1,0 +1,13 @@
+version: '2.1'
+services:
+
+  skygram-api:
+    image: toandc/skygram-api:0.0.1
+    restart: always
+    ports:
+      - 9000:8080
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+
