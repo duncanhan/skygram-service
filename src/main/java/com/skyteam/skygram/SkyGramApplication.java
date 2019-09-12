@@ -9,5 +9,4 @@ public class SkyGramApplication {
     public static void main(String[] args) {
         SpringApplication.run(SkyGramApplication.class, args);
     }
-
 }

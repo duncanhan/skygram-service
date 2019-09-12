@@ -1,16 +1,13 @@
 package com.skyteam.skygram.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-public class UserDTO {
+public class UserRequestDTO {
 
-    private String id;
-
+    @NotBlank(message = "Username is required")
     private String username;
 
     @NotBlank(message = "First Name is required")
@@ -21,35 +18,27 @@ public class UserDTO {
     @JsonProperty("last_name")
     private String lastName;
 
+    @NotBlank(message = "Email is required")
     private String email;
 
     private String phone;
 
     private LocalDate birthday;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime signupDate;
+    @NotBlank(message = "Password is required")
+    private String password;
 
-    public UserDTO() {
+    public UserRequestDTO() {
     }
 
-    public UserDTO(String id, String username, String firstName, String lastName, String email, String phone, LocalDate birthday, LocalDateTime signupDate) {
-        this.id = id;
+    public UserRequestDTO(@NotBlank(message = "Username is required") String username, @NotBlank(message = "First Name is required") String firstName, @NotBlank(message = "Last Name is required") String lastName, @NotBlank(message = "Email is required") String email, String phone, LocalDate birthday, @NotBlank(message = "Password is required") String password) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
         this.birthday = birthday;
-        this.signupDate = signupDate;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        this.password = password;
     }
 
     public String getUsername() {
@@ -100,11 +89,11 @@ public class UserDTO {
         this.birthday = birthday;
     }
 
-    public LocalDateTime getSignupDate() {
-        return signupDate;
+    public String getPassword() {
+        return password;
     }
 
-    public void setSignupDate(LocalDateTime signupDate) {
-        this.signupDate = signupDate;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

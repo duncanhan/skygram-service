@@ -1,9 +1,13 @@
 package com.skyteam.skygram.core;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response<T> {
 
     private int code;
     private String message;
+    private Object errors;
     private T data;
 
     public Response<T> setCode(ResponseCode resultCode) {
@@ -30,6 +34,15 @@ public class Response<T> {
 
     public Response setData(T data) {
         this.data = data;
+        return this;
+    }
+
+    public Object getErrors() {
+        return errors;
+    }
+
+    public Response setErrors(Object errors) {
+        this.errors = errors;
         return this;
     }
 }
