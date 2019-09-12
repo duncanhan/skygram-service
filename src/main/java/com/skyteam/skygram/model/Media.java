@@ -1,14 +1,27 @@
 package com.skyteam.skygram.model;
 
 import com.skyteam.skygram.service.file.FileType;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
+@Document
 public abstract class Media {
-    @Id
+
     private String id;
+
     private String url;
+
+    @Field(value = "file_format")
     private String fileFormat;
+
     private FileType type;
+
+    public Media(String id, String url, String fileFormat, FileType type) {
+        this.id = id;
+        this.url = url;
+        this.fileFormat = fileFormat;
+        this.type = type;
+    }
 
     public Media(String url) {
         setUrl(url);

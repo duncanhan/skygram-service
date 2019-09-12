@@ -35,8 +35,8 @@ public class UserController {
 
     @ApiOperation(value = "Update profile", authorizations = {@Authorization(value = "apiKey")})
     @PutMapping("/me/profile")
-    public Response updateProfile(@ApiIgnore UserPrincipal currentUser, @Valid @RequestBody UserDTO userDTO) {
-        userService.updateUser(currentUser, userDTO);
+    public Response updateProfile(@ApiIgnore UserPrincipal currentUser, @Valid @RequestBody UserDTO body) {
+        userService.updateUser(currentUser, body);
         return ResponseBuilder.buildSuccess("User is updated");
     }
 

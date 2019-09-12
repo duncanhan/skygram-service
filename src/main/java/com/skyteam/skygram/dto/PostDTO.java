@@ -1,101 +1,122 @@
 package com.skyteam.skygram.dto;
 
-import com.skyteam.skygram.model.Comment;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skyteam.skygram.model.Location;
 import com.skyteam.skygram.model.Media;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class PostDTO {
 
-  private String id;
-  private String title;
-  private LocalDateTime date;
-  private String location;
-  private List<Comment> comments;
-  private List<String> likes;
-  private List<Media> media;
-  private String username;
-  private String[] hashtags;
+    private String id;
 
-  public PostDTO(String id, String username, String title, LocalDateTime date, String location, List<Media> media, String[] hashtags) {
-    this.id = id;
-    this.title = title;
-    this.date = date;
-    this.location = location;
-    this.media = media;
-    this.username = username;
-    this.hashtags = hashtags;
-  }
+    private String title;
 
-  public String getId() {
-    return id;
-  }
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonProperty("posted_date")
+    private LocalDateTime postedDate;
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonProperty("last_modified_date")
+    private LocalDateTime lastModifiedDate;
 
-  public String getTitle() {
-    return title;
-  }
+    private Location location;
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
+    private List<CommentDTO> comments;
 
-  public LocalDateTime getDate() {
-    return date;
-  }
+    private Set<String> likes;
 
-  public void setDate(LocalDateTime date) {
-    this.date = date;
-  }
+    private List<Media> medias;
 
-  public String getLocation() {
-    return location;
-  }
+    private String[] hashtags;
 
-  public void setLocation(String location) {
-    this.location = location;
-  }
+    public PostDTO() {
+    }
 
-  public List<Comment> getComments() {
-    return comments;
-  }
+    public PostDTO(String id, String title, LocalDateTime postedDate, LocalDateTime lastModifiedDate, Location location, List<CommentDTO> comments, Set<String> likes, List<Media> medias, String[] hashtags) {
+        this.id = id;
+        this.title = title;
+        this.postedDate = postedDate;
+        this.lastModifiedDate = lastModifiedDate;
+        this.location = location;
+        this.comments = comments;
+        this.likes = likes;
+        this.medias = medias;
+        this.hashtags = hashtags;
+    }
 
-  public void setComments(List<Comment> comments) {
-    this.comments = comments;
-  }
+    public String getId() {
+        return id;
+    }
 
-  public List<String> getLikes() {
-    return likes;
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  public void setLikes(List<String> likes) {
-    this.likes = likes;
-  }
+    public String getTitle() {
+        return title;
+    }
 
-  public List<Media> getMedia() {
-    return media;
-  }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-  public void setMedia(List<Media> media) {
-    this.media = media;
-  }
+    public LocalDateTime getPostedDate() {
+        return postedDate;
+    }
 
-  public String getUsername() {
-    return username;
-  }
+    public void setPostedDate(LocalDateTime postedDate) {
+        this.postedDate = postedDate;
+    }
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
+    public LocalDateTime getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-  public String[] getHashtags() {
-    return hashtags;
-  }
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-  public void setHashtags(String[] hashtags) {
-    this.hashtags = hashtags;
-  }
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public List<CommentDTO> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentDTO> comments) {
+        this.comments = comments;
+    }
+
+    public Set<String> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Set<String> likes) {
+        this.likes = likes;
+    }
+
+    public List<Media> getMedias() {
+        return medias;
+    }
+
+    public void setMedias(List<Media> medias) {
+        this.medias = medias;
+    }
+
+    public String[] getHashtags() {
+        return hashtags;
+    }
+
+    public void setHashtags(String[] hashtags) {
+        this.hashtags = hashtags;
+    }
 }

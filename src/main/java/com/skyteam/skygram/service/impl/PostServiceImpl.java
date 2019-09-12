@@ -1,40 +1,45 @@
 package com.skyteam.skygram.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.skyteam.skygram.dto.CommentDTO;
 import com.skyteam.skygram.dto.CommentRequestDTO;
 import com.skyteam.skygram.dto.PostDTO;
-import com.skyteam.skygram.dto.PostRequestDTO;
 import com.skyteam.skygram.exception.AppException;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
 import com.skyteam.skygram.model.*;
 import com.skyteam.skygram.repository.PostRepository;
 import com.skyteam.skygram.security.UserPrincipal;
 import com.skyteam.skygram.service.PostService;
-import com.skyteam.skygram.service.file.FileStorageService;
 import com.skyteam.skygram.service.file.FileType;
 import com.skyteam.skygram.util.Mapper;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 
 @Service
-public class PostServiceImp implements PostService {
+public class PostServiceImpl implements PostService {
 
     @Autowired
-    PostRepository postRepository;
+    private PostRepository postRepository;
 
     @Autowired
-    private FileStorageService fileStorageServ;
+    private Cloudinary cloudinary;
+
+    @Value("${cloudinary.folder}")
+    private String folder;
 
     private Post get(String postId) {
         return postRepository.findById(postId)
@@ -47,51 +52,38 @@ public class PostServiceImp implements PostService {
     }
 
     @Override
-    public String createPost(String user, String title, MultipartFile[] files, String[] location, List<String> hashtags) {
-        if (files.length == 0) {
-//      return ResponseBuilder
-//          .buildFail(ResponseCode.INTERNAL_SERVER_ERROR,"Please chose some files");
-            throw new AppException("Please chose some files");
-        }
+    public PostDTO createPost(UserPrincipal currentUser, String title, MultipartFile[] files, String[] location, String[] hashtags) throws IOException {
+        Post post = new Post(currentUser.getId(), title, new HashSet<>(Arrays.asList(hashtags)), new Location(location));
+        postRepository.save(post);
 
-        Post post = new Post(user, title, new HashSet<>(hashtags), new Location(location));
-        int counter = 1;
-        String errorMessage = null;
-
+        Media media;
+        int count = 0;
         for (MultipartFile file : files) {
-            Pair<Boolean, Pair<String, String>> result = fileStorageServ.storeFile(file);
-            if (!result.getFirst()) {
-                errorMessage = result.getSecond().getSecond();
-                continue;
-            }
-
-            postRepository.save(post);
-
-            Photo photo = new Photo(result.getSecond().getFirst());
-            if (photo.getType().equals(FileType.PHOTO)) {
-                photo.setId(post.getId() + "_" + counter);
-                post.getMedias().add(photo);
-            } else {
-                Video video = new Video(result.getSecond().getFirst());
-                video.setId(post.getId() + "_" + counter);
-                post.getMedias().add(video);
-            }
-            counter += 1;
+            media = this.upload(file, ++count, post.getId());
+            post.addMedia(media);
         }
-
         if (post.getMedias().isEmpty()) {
             throw new AppException("Please add an image");
         }
         postRepository.save(post);
-        return post.getId();
+
+        return Mapper.map(post, PostDTO.class);
     }
 
     @Override
-    public void updatePost(UserPrincipal currentUser, String postId, PostRequestDTO postRequestDTO) {
+    public void updatePost(UserPrincipal currentUser, String postId, String title, MultipartFile[] files, String[] location, String[] hashtags) throws IOException {
         Post post = this.checkPermission(currentUser.getId(), postId);
-        post.setTitle(postRequestDTO.getTitle());
-        post.setLocation(new Location(postRequestDTO.getLocation()));
-        post.setHashtags(postRequestDTO.getHashtags());
+        post.setTitle(title);
+        post.setLocation(new Location(location));
+        post.setHashtags(new HashSet<>(Arrays.asList(hashtags)));
+        Media media;
+        for (MultipartFile file : files) {
+            media = this.upload(file, 1, postId);
+            post.updateMedia(media);
+        }
+        if (post.getMedias().isEmpty()) {
+            throw new AppException("Please add an image");
+        }
         postRepository.save(post);
     }
 
@@ -144,6 +136,7 @@ public class PostServiceImp implements PostService {
 
     /**
      * Check if post is allowed modify from user
+     *
      * @param userId user id
      * @param postId post id
      * @return post
@@ -154,5 +147,33 @@ public class PostServiceImp implements PostService {
             throw new AppException("You DO NOT have permission to do this action");
         }
         return post;
+    }
+
+    /**
+     * Upload media file to Cloudinary
+     *
+     * @param file file to upload
+     * @return result
+     * @throws IOException exception
+     */
+    private Media upload(MultipartFile file, int count, String postId) throws IOException {
+        Map uploadResult = cloudinary.uploader().upload(
+                file.getBytes(),
+                ObjectUtils.asMap(
+                        "public_id", postId + "_" + count,
+                        "folder", folder + postId
+                ));
+        if (uploadResult == null) {
+            throw new AppException("Error in uploading media file(s)");
+        }
+        Media media;
+        if (uploadResult.get("resource_type").toString().equals("image")) {
+            media = new Photo(postId + "_" + count, uploadResult.get("url").toString(), uploadResult.get("format").toString(), FileType.PHOTO);
+        } else if (uploadResult.get("resource_type").toString().equals("video")) {
+            media = new Video(postId + "_" + count, uploadResult.get("url").toString(), uploadResult.get("format").toString(), FileType.VIDEO, 0);
+        } else {
+            media = new Photo(postId + "_" + count, uploadResult.get("url").toString(), uploadResult.get("format").toString(), FileType.OTHER);
+        }
+        return media;
     }
 }

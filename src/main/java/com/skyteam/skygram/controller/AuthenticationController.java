@@ -37,17 +37,17 @@ public class AuthenticationController {
 
     @ApiOperation(value = "Login")
     @PostMapping("/login")
-    public Response login(@Valid @RequestBody LoginDTO loginDTO) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getAccount(), loginDTO.getPassword()));
-        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(loginDTO.getAccount());
+    public Response login(@Valid @RequestBody LoginDTO body) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(body.getAccount(), body.getPassword()));
+        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(body.getAccount());
         String token = jwtTokenProvider.generateJwtToken(userDetails);
         return ResponseBuilder.buildSuccess(token);
     }
 
     @ApiOperation(value = "Register an account")
     @PostMapping("/register")
-    public Response register(@Valid @RequestBody @NotNull UserRequestDTO userRequestDTO) {
-        UserDTO userDTO = userService.addUser(userRequestDTO);
+    public Response register(@Valid @RequestBody @NotNull UserRequestDTO body) {
+        UserDTO userDTO = userService.addUser(body);
         return ResponseBuilder.buildSuccess(userDTO);
     }
 }

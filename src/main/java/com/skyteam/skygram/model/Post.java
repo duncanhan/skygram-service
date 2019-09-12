@@ -8,7 +8,6 @@ import java.util.*;
 import com.skyteam.skygram.dto.CommentRequestDTO;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.util.CollectionUtils;
@@ -42,7 +41,7 @@ public class Post {
     @Field(value = "location")
     private Location location;
 
-    @Field(value = "media")
+    @Field(value = "medias")
     private List<Media> medias;
 
     @Nullable
@@ -189,5 +188,20 @@ public class Post {
             this.likes = new HashSet<>();
         }
         this.likes.remove(userId);
+    }
+
+    public void addMedia(Media media) {
+        if (CollectionUtils.isEmpty(this.medias)) {
+            this.medias = new ArrayList<>();
+        }
+        this.medias.add(media);
+    }
+
+    public void updateMedia(Media media) {
+        if (CollectionUtils.isEmpty(this.medias)) {
+            this.medias = new ArrayList<>();
+        }
+        this.medias.clear();
+        this.medias.add(media);
     }
 }

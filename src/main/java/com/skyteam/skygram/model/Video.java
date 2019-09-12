@@ -1,21 +1,25 @@
 package com.skyteam.skygram.model;
 
-public class Video extends Media{
-  private double duration;
+import com.skyteam.skygram.service.file.FileType;
 
-  public Video(String url) {
-    super(url);
-  }
+public class Video extends Media {
 
-  public void stream(){
+    private double duration;
 
-  }
+    public Video(String id, String url, String fileFormat, FileType type, double duration) {
+        super(id, url, fileFormat, type);
+        this.duration = duration;
+    }
 
-  public double getDuration() {
-    return duration;
-  }
+    public void stream() {
 
-  public void setDuration(double duration) {
-    this.duration = duration;
-  }
+    }
+
+    public double getDuration() {
+        return duration;
+    }
+
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
 }

@@ -8,15 +8,15 @@ import com.skyteam.skygram.security.UserPrincipal;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.IOException;
 
 public interface PostService {
 
     Page<PostDTO> getPostsByUser(String username);
 
-    String createPost(String user, String title, MultipartFile[] files, String[] localtion, List<String> hashtags);
+    PostDTO createPost(UserPrincipal currentUser, String title, MultipartFile[] files, String[] location, String[] hashtags) throws IOException;
 
-    void updatePost(UserPrincipal currentUser, String postId, PostRequestDTO postRequestDTO);
+    void updatePost(UserPrincipal currentUser, String postId, String title, MultipartFile[] files, String[] location, String[] hashtags) throws IOException;
 
     void deletePost(UserPrincipal currentUser, String postId);
 

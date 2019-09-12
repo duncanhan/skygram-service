@@ -4,7 +4,6 @@ import com.skyteam.skygram.core.Response;
 import com.skyteam.skygram.core.ResponseBuilder;
 import com.skyteam.skygram.dto.CommentDTO;
 import com.skyteam.skygram.dto.CommentRequestDTO;
-import com.skyteam.skygram.dto.PostRequestDTO;
 import com.skyteam.skygram.security.CurrentUser;
 import com.skyteam.skygram.security.UserPrincipal;
 import com.skyteam.skygram.service.PostService;
@@ -16,7 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/posts")
@@ -26,21 +27,25 @@ public class PostController {
     private PostService postService;
 
     @ApiOperation(value = "Create a post", authorizations = {@Authorization(value = "apiKey")})
-    @PostMapping(consumes = {"multipart/form-data"})
-    public Response post(@ApiIgnore @CurrentUser UserPrincipal currentUser, @RequestParam("files") MultipartFile file,
-                         @RequestParam("title") String title,
-                         @RequestParam("localtion") String[] localtion,
-                         @RequestParam("hashtags") List<String> hashtags) {
+    @PostMapping(consumes = "multipart/form-data")
+    public Response post(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                         @Valid @RequestPart("media") @NotNull(message = "Please choose at least one photo/video") @NotBlank(message = "Please choose at least one photo/video") MultipartFile file,
+                         @RequestPart("title") String title,
+                         @RequestParam("location") String[] location,
+                         @RequestParam("hashtags") String[] hashtags) throws IOException {
         MultipartFile[] files = {file};
-        return ResponseBuilder.buildSuccess(postService.createPost(currentUser.getId(), title, files, localtion, hashtags));
+        return ResponseBuilder.buildSuccess(postService.createPost(currentUser, title, files, location, hashtags));
     }
 
     @ApiOperation(value = "Update post", authorizations = {@Authorization(value = "apiKey")})
-    @PutMapping(value = {"/{id}"}, consumes = {"multipart/form-data"})
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
     public Response updatePost(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                @PathVariable("id") String postId,
-                               @ModelAttribute PostRequestDTO postRequestDTO) {
-        postService.updatePost(currentUser, postId, postRequestDTO);
+                               @RequestPart("title") String title,
+                               @RequestPart("media") MultipartFile file,
+                               @RequestParam("location") String[] location,
+                               @RequestParam("hashtags") String[] hashtags) throws IOException {
+        postService.updatePost(currentUser, postId, title, new MultipartFile[]{file}, location, hashtags);
         return ResponseBuilder.buildSuccess("Post is updated", null);
     }
 
