@@ -1,11 +1,9 @@
 package com.skyteam.skygram.service;
 
-import com.skyteam.skygram.dto.CommentDTO;
-import com.skyteam.skygram.dto.CommentRequestDTO;
-import com.skyteam.skygram.dto.PostDTO;
-import com.skyteam.skygram.dto.PostRequestDTO;
+import com.skyteam.skygram.dto.*;
 import com.skyteam.skygram.security.UserPrincipal;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -29,4 +27,6 @@ public interface PostService {
     void like(UserPrincipal currentUser, String postId);
 
     void unlike(UserPrincipal currentUser, String postId);
+
+    Page<SearchResponseDTO> searchHashtags(String q, Pageable page);
 }

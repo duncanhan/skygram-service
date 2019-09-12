@@ -9,28 +9,23 @@ import org.springframework.data.domain.Sort;
 public class PageUtil {
 
     public static Pageable initPage(PageDTO pageDTO) {
-        int page = pageDTO.getPage();
-        int size = pageDTO.getSize();
-
-        if (page < 1) {
-            page = Constants.DEFAULT_PAGE;
-        }
-        if (size < 1) {
-            size = Constants.DEFAULT_SIZE;
-        }
-        return PageRequest.of(page, size);
+        return PageRequest.of(getPageDetail(pageDTO)[0], getPageDetail(pageDTO)[1]);
     }
 
     public static Pageable initPage(PageDTO pageDTO, Sort sort) {
-        int page = pageDTO.getPage();
-        int size = pageDTO.getSize();
+        return PageRequest.of(getPageDetail(pageDTO)[0], getPageDetail(pageDTO)[1], sort);
+    }
 
-        if (page < 1) {
+    private static int[] getPageDetail(PageDTO pageDTO) {
+        Integer page = pageDTO.getPage();
+        Integer size = pageDTO.getSize();
+
+        if (page == null || page < 1) {
             page = Constants.DEFAULT_PAGE;
         }
-        if (size < 1) {
+        if (size == null || size < 1) {
             size = Constants.DEFAULT_SIZE;
         }
-        return PageRequest.of(page, size, sort);
+        return new int[] {page, size};
     }
 }

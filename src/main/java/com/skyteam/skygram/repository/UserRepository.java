@@ -7,6 +7,8 @@ import com.skyteam.skygram.model.User;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 
 public interface UserRepository extends BaseRepository<User, String> {
@@ -19,4 +21,6 @@ public interface UserRepository extends BaseRepository<User, String> {
     Optional<User> findByUsername(String username);
 
     boolean existsByUsername(String username);
+
+    Page<User> findByUsernameStartsWith(String q, Pageable pageable);
 }

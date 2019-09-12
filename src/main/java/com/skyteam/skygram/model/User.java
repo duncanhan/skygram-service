@@ -18,6 +18,7 @@ public class User implements Serializable {
     @Id
     private String id;
 
+    @Indexed(unique = true)
     @Field("username")
     private String username;
 

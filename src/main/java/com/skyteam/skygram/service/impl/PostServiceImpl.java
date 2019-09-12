@@ -5,6 +5,7 @@ import com.cloudinary.utils.ObjectUtils;
 import com.skyteam.skygram.dto.CommentDTO;
 import com.skyteam.skygram.dto.CommentRequestDTO;
 import com.skyteam.skygram.dto.PostDTO;
+import com.skyteam.skygram.dto.SearchResponseDTO;
 import com.skyteam.skygram.exception.AppException;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
 import com.skyteam.skygram.model.*;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -132,6 +134,13 @@ public class PostServiceImpl implements PostService {
         Post post = this.checkPermission(currentUser.getId(), postId);
         post.unlikeBy(currentUser.getId());
         postRepository.save(post);
+    }
+
+    @Override
+    public Page<SearchResponseDTO> searchHashtags(String q, Pageable page) {
+//        Page<User> users = postRepository.findByUsernameStartsWith(q, page);
+//        return users.map(user -> new SearchResponseDTO(user.getId(), null, user.getUsername(), user.getFirstName() + " " + user.getLastName()));
+        return null;
     }
 
     /**

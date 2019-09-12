@@ -1,6 +1,7 @@
 package com.skyteam.skygram.service.impl;
 
 import com.skyteam.skygram.common.Constants;
+import com.skyteam.skygram.dto.SearchResponseDTO;
 import com.skyteam.skygram.dto.UserDTO;
 import com.skyteam.skygram.dto.UserRequestDTO;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
@@ -15,12 +16,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
 
 @Transactional
 @Service
@@ -54,8 +53,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> search(String term) {
-        return userRepository.search(term);
+    public Page<UserDTO> search(String q, Pageable page) {
+        Page<User> users = userRepository.findByUsernameStartsWith(q, page);
+        return Mapper.mapPage(users, UserDTO.class);
+    }
+
+    @Override
+    public Page<SearchResponseDTO> searchForHome(String q, Pageable page) {
+        Page<User> users = userRepository.findByUsernameStartsWith(q, page);
+        return users.map(user -> new SearchResponseDTO(user.getId(), null, user.getUsername(), user.getFirstName() + " " + user.getLastName()));
     }
 
     @Override

@@ -6,28 +6,28 @@ public class PageDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private int page;
+    private Integer page;
 
-    private int size;
+    private Integer size;
 
-    public PageDTO(int page, int size) {
+    public PageDTO(Integer page, Integer size) {
         this.page = page;
         this.size = size;
     }
 
-    public int getPage() {
+    public Integer getPage() {
         return page;
     }
 
-    public void setPage(int page) {
+    public void setPage(Integer page) {
         this.page = page;
     }
 
-    public int getSize() {
+    public Integer getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(Integer size) {
         this.size = size;
     }
 }
