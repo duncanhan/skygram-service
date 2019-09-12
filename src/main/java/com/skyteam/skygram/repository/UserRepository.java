@@ -23,4 +23,6 @@ public interface UserRepository extends BaseRepository<User, String> {
     boolean existsByUsername(String username);
 
     Page<User> findByUsernameStartsWith(String q, Pageable pageable);
+
+    String findUserIdByUsername(String username);
 }

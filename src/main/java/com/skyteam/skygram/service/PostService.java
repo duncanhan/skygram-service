@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public interface PostService {
 
-    Page<PostDTO> getPostsByUser(String username);
+    Page<PostDTO> getPostsByUser(String username,Pageable pageable);
 
     PostDTO createPost(UserPrincipal currentUser, String title, MultipartFile[] files, String[] location, String[] hashtags) throws IOException;
 

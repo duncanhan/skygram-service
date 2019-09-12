@@ -18,10 +18,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,8 +46,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostDTO> getPostsByUser(String username) {
-        return postRepository.getUserPosts(username, PageRequest.of(0, 10, new Sort(Direction.DESC, "date")));
+    public Page<PostDTO> getPostsByUser(String id, Pageable pageable) {
+        Page<Post> page = postRepository.findByAuthor(id, pageable);
+        return Mapper.mapPage(page, PostDTO.class);
     }
 
     @Override

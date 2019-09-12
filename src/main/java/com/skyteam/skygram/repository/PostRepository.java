@@ -9,6 +9,5 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface PostRepository extends BaseRepository<Post, String>{
 
-  @Query("{username: ?0}")
-  Page<PostDTO> getUserPosts(String username,Pageable pageable);
+  Page<Post> findByAuthor(String id, Pageable pageable);
 }
