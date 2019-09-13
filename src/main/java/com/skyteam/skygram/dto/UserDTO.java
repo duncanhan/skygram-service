@@ -30,18 +30,11 @@ public class UserDTO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime signupDate;
 
-    public UserDTO() {
-    }
+    private int numOfFollowers;
 
-    public UserDTO(String id, String username, String firstName, String lastName, String email, String phone, LocalDate birthday, LocalDateTime signupDate) {
-        this.id = id;
-        this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phone = phone;
-        this.birthday = birthday;
-        this.signupDate = signupDate;
+    private int numOfFollowings;
+
+    public UserDTO() {
     }
 
     public String getId() {
@@ -106,5 +99,21 @@ public class UserDTO {
 
     public void setSignupDate(LocalDateTime signupDate) {
         this.signupDate = signupDate;
+    }
+
+    public void setNumOfFollowers(int numOfFollowers) {
+        this.numOfFollowers = numOfFollowers;
+    }
+
+    public int getNumOfFollowers() {
+        return numOfFollowers;
+    }
+
+    public void setNumOfFollowings(int numOfFollowings) {
+        this.numOfFollowings = numOfFollowings;
+    }
+
+    public int getNumOfFollowings() {
+        return numOfFollowings;
     }
 }

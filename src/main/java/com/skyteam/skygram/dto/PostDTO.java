@@ -7,11 +7,12 @@ import com.skyteam.skygram.model.Media;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 public class PostDTO {
 
     private String id;
+
+    private String author;
 
     private String title;
 
@@ -27,25 +28,13 @@ public class PostDTO {
 
     private List<CommentDTO> comments;
 
-    private Set<String> likes;
+    private int numOfLikes;
 
-    private List<Media> medias;
+    private List<Media> media;
 
     private String[] hashtags;
 
     public PostDTO() {
-    }
-
-    public PostDTO(String id, String title, LocalDateTime postedDate, LocalDateTime lastModifiedDate, Location location, List<CommentDTO> comments, Set<String> likes, List<Media> medias, String[] hashtags) {
-        this.id = id;
-        this.title = title;
-        this.postedDate = postedDate;
-        this.lastModifiedDate = lastModifiedDate;
-        this.location = location;
-        this.comments = comments;
-        this.likes = likes;
-        this.medias = medias;
-        this.hashtags = hashtags;
     }
 
     public String getId() {
@@ -54,6 +43,14 @@ public class PostDTO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getTitle() {
@@ -96,20 +93,20 @@ public class PostDTO {
         this.comments = comments;
     }
 
-    public Set<String> getLikes() {
-        return likes;
+    public int getNumOfLikes() {
+        return numOfLikes;
     }
 
-    public void setLikes(Set<String> likes) {
-        this.likes = likes;
+    public void setNumOfLikes(int numOfLikes) {
+        this.numOfLikes = numOfLikes;
     }
 
-    public List<Media> getMedias() {
-        return medias;
+    public List<Media> getMedia() {
+        return media;
     }
 
-    public void setMedias(List<Media> medias) {
-        this.medias = medias;
+    public void setMedia(List<Media> media) {
+        this.media = media;
     }
 
     public String[] getHashtags() {

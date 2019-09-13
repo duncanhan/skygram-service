@@ -193,4 +193,12 @@ public class User implements Serializable {
     public void unfollow(String userId) {
         this.followings.remove(userId);
     }
+
+    public int getNumOfFollowers() {
+        return this.followers != null ? this.followers.size() : 0;
+    }
+
+    public int getNumOfFollowings() {
+        return this.followings != null ? this.followings.size() : 0;
+    }
 }

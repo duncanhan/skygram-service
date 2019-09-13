@@ -1,17 +1,22 @@
 package com.skyteam.skygram.controller;
 
+import com.skyteam.skygram.common.PageDTO;
 import com.skyteam.skygram.core.Response;
 import com.skyteam.skygram.core.ResponseBuilder;
 import com.skyteam.skygram.dto.CommentDTO;
 import com.skyteam.skygram.dto.CommentRequestDTO;
+import com.skyteam.skygram.dto.PostDTO;
 import com.skyteam.skygram.security.CurrentUser;
 import com.skyteam.skygram.security.UserPrincipal;
 import com.skyteam.skygram.service.PostService;
+import com.skyteam.skygram.util.PageUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -129,5 +134,26 @@ public class PostController {
                                @PathVariable("id") String postId) {
         postService.unlike(currentUser, postId);
         return ResponseBuilder.buildSuccess();
+    }
+
+    @ApiOperation(value = "Get timeline posts", authorizations = {@Authorization(value = "apiKey")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "errors")})
+    @GetMapping(value = "/timeline", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getTimelinePosts(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                     @ModelAttribute PageDTO pageDTO) {
+        Page<PostDTO> posts= postService.getTimelinePosts(currentUser, PageUtil.initPage(pageDTO, new Sort(Sort.Direction.DESC, "postedDate")));
+        return ResponseBuilder.buildSuccess(posts);
+    }
+
+    @ApiOperation(value = "Get post detail", authorizations = {@Authorization(value = "apiKey")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "errors")})
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getTimelinePosts(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                     @PathVariable("id") String postId) {
+        return ResponseBuilder.buildSuccess(postService.getPostDetail(postId));
     }
 }

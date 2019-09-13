@@ -11,10 +11,12 @@ import com.skyteam.skygram.exception.NoPermissionException;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
 import com.skyteam.skygram.model.*;
 import com.skyteam.skygram.repository.PostRepository;
+import com.skyteam.skygram.repository.UserRepository;
 import com.skyteam.skygram.security.UserPrincipal;
 import com.skyteam.skygram.service.PostService;
 import com.skyteam.skygram.service.file.FileType;
 import com.skyteam.skygram.util.Mapper;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,15 +27,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private Cloudinary cloudinary;
@@ -63,7 +66,7 @@ public class PostServiceImpl implements PostService {
             media = this.upload(file, ++count, post.getId());
             post.addMedia(media);
         }
-        if (post.getMedias().isEmpty()) {
+        if (post.getMedia().isEmpty()) {
             throw new AppException("Please add an image");
         }
         postRepository.save(post);
@@ -82,7 +85,7 @@ public class PostServiceImpl implements PostService {
             media = this.upload(file, 1, postId);
             post.updateMedia(media);
         }
-        if (post.getMedias().isEmpty()) {
+        if (post.getMedia().isEmpty()) {
             throw new AppException("Please add an image");
         }
         postRepository.save(post);
@@ -140,6 +143,24 @@ public class PostServiceImpl implements PostService {
 //        Page<User> users = postRepository.findByUsernameStartsWith(q, page);
 //        return users.map(user -> new SearchResponseDTO(user.getId(), null, user.getUsername(), user.getFirstName() + " " + user.getLastName()));
         return null;
+    }
+
+    @Override
+    public Page<PostDTO> getTimelinePosts(UserPrincipal currentUser, Pageable page) {
+        List<String> authors = new ArrayList<>();
+        authors.add(currentUser.getId());
+        Document document = userRepository.findFollowings(currentUser.getId());
+        List<String> followings = (List<String>) document.get("followings");
+        if (followings!= null && !followings.isEmpty()) {
+            authors.addAll(followings);
+        }
+        Page<Post> posts = postRepository.findByAuthorIn(authors, page);
+        return Mapper.mapPage(posts, PostDTO.class);
+    }
+
+    @Override
+    public PostDTO getPostDetail(String postId) {
+        return Mapper.map(this.get(postId), PostDTO.class);
     }
 
     /**

@@ -29,4 +29,8 @@ public interface PostService {
     void unlike(UserPrincipal currentUser, String postId);
 
     Page<SearchResponseDTO> searchHashtags(String q, Pageable page);
+
+    Page<PostDTO> getTimelinePosts(UserPrincipal currentUser, Pageable page);
+
+    PostDTO getPostDetail(String postId);
 }

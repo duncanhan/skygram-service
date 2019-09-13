@@ -41,8 +41,8 @@ public class Post {
     @Field(value = "location")
     private Location location;
 
-    @Field(value = "medias")
-    private List<Media> medias;
+    @Field(value = "media")
+    private List<Media> media;
 
     @Nullable
     @Field(value = "comments")
@@ -59,7 +59,7 @@ public class Post {
         this.lastModifiedDate = LocalDateTime.now();
         this.hashtags = hashtags;
         this.location = location;
-        this.medias = new ArrayList<>();
+        this.media = new ArrayList<>();
         this.comments = new ArrayList<>();
         this.likes = new HashSet<>();
     }
@@ -124,12 +124,12 @@ public class Post {
         this.location = location;
     }
 
-    public List<Media> getMedias() {
-        return medias;
+    public List<Media> getMedia() {
+        return media;
     }
 
-    public void setMedias(List<Media> medias) {
-        this.medias = medias;
+    public void setMedia(List<Media> media) {
+        this.media = media;
     }
 
     public List<Comment> getComments() {
@@ -191,17 +191,21 @@ public class Post {
     }
 
     public void addMedia(Media media) {
-        if (CollectionUtils.isEmpty(this.medias)) {
-            this.medias = new ArrayList<>();
+        if (CollectionUtils.isEmpty(this.media)) {
+            this.media = new ArrayList<>();
         }
-        this.medias.add(media);
+        this.media.add(media);
     }
 
     public void updateMedia(Media media) {
-        if (CollectionUtils.isEmpty(this.medias)) {
-            this.medias = new ArrayList<>();
+        if (CollectionUtils.isEmpty(this.media)) {
+            this.media = new ArrayList<>();
         }
-        this.medias.clear();
-        this.medias.add(media);
+        this.media.clear();
+        this.media.add(media);
+    }
+
+    public int getNumOfLikes() {
+        return this.likes != null ? this.likes.size() : 0;
     }
 }

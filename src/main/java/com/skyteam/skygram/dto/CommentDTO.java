@@ -1,8 +1,6 @@
 package com.skyteam.skygram.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 
 public class CommentDTO {
 
@@ -14,7 +12,7 @@ public class CommentDTO {
 
     private String author;
 
-    private Set<String> likes;
+    private int numOfLikes;
 
     public String getId() {
         return id;
@@ -48,11 +46,11 @@ public class CommentDTO {
         this.author = author;
     }
 
-    public Set<String> getLikes() {
-        return likes;
+    public int getNumOfLikes() {
+        return numOfLikes;
     }
 
-    public void setLikes(Set<String> likes) {
-        this.likes = likes;
+    public void setNumOfLikes(int numOfLikes) {
+        this.numOfLikes = numOfLikes;
     }
 }

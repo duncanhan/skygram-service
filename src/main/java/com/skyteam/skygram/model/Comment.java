@@ -91,4 +91,8 @@ public class Comment {
     public void setLikes(Set<String> likes) {
         this.likes = likes;
     }
+
+    public int getNumOfLikes() {
+        return this.likes != null ? this.likes.size() : 0;
+    }
 }
