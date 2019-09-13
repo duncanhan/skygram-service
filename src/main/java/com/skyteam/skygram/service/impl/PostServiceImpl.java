@@ -7,6 +7,7 @@ import com.skyteam.skygram.dto.CommentRequestDTO;
 import com.skyteam.skygram.dto.PostDTO;
 import com.skyteam.skygram.dto.SearchResponseDTO;
 import com.skyteam.skygram.exception.AppException;
+import com.skyteam.skygram.exception.NoPermissionException;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
 import com.skyteam.skygram.model.*;
 import com.skyteam.skygram.repository.PostRepository;
@@ -122,14 +123,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void like(UserPrincipal currentUser, String postId) {
-        Post post = this.checkPermission(currentUser.getId(), postId);
+        Post post = this.get(postId);
         post.likedBy(currentUser.getId());
         postRepository.save(post);
     }
 
     @Override
     public void unlike(UserPrincipal currentUser, String postId) {
-        Post post = this.checkPermission(currentUser.getId(), postId);
+        Post post = this.get(postId);
         post.unlikeBy(currentUser.getId());
         postRepository.save(post);
     }
@@ -151,7 +152,7 @@ public class PostServiceImpl implements PostService {
     private Post checkPermission(String userId, String postId) {
         Post post = this.get(postId);
         if (!post.getAuthor().equals(userId)) {
-            throw new AppException("You DO NOT have permission to do this action");
+            throw new NoPermissionException("You DO NOT have permission to do this action");
         }
         return post;
     }

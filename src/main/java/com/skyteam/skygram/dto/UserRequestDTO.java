@@ -2,6 +2,7 @@ package com.skyteam.skygram.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
@@ -18,6 +19,7 @@ public class UserRequestDTO {
     @JsonProperty("last_name")
     private String lastName;
 
+    @Email(message = "Wrong email format")
     @NotBlank(message = "Email is required")
     private String email;
 

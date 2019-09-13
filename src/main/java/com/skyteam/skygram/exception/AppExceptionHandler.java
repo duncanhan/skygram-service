@@ -54,4 +54,14 @@ public class AppExceptionHandler {
         });
         return ResponseBuilder.buildFail(ResponseCode.BAD_REQUEST, "Validation Failed", errors);
     }
+
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(NoPermissionException.class)
+    public Response handleAppException(NoPermissionException e) {
+        String errorMsg = "No permission exception";
+        if (e != null) {
+            errorMsg = e.getMessage();
+        }
+        return ResponseBuilder.buildFail(ResponseCode.UNAUTHORIZED, "No permission", errorMsg);
+    }
 }
