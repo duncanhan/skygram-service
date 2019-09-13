@@ -1,4 +1,4 @@
-FROM java:8-jre
+FROM openjdk:12.0.2-jdk
 MAINTAINER SkyTeam <skyteam@gmail.com>
 
 ENTRYPOINT ["java", "-Xmx200m", "-jar", "/usr/share/skygram/skygram-api.jar"]

@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.skyteam</groupId>
     <artifactId>skygram</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.4</version>
     <name>SkyGram</name>
     <packaging>jar</packaging>
     <description>SkyGram project</description>
