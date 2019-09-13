@@ -8,8 +8,11 @@ import com.skyteam.skygram.security.CurrentUser;
 import com.skyteam.skygram.security.UserPrincipal;
 import com.skyteam.skygram.service.PostService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
@@ -27,7 +30,10 @@ public class PostController {
     private PostService postService;
 
     @ApiOperation(value = "Create a post", authorizations = {@Authorization(value = "apiKey")})
-    @PostMapping(consumes = "multipart/form-data")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 400, message = "errors")})
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Response post(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                          @Valid @RequestPart("media") @NotNull(message = "Please choose at least one photo/video") @NotBlank(message = "Please choose at least one photo/video") MultipartFile file,
                          @RequestPart("title") String title,
@@ -38,7 +44,11 @@ public class PostController {
     }
 
     @ApiOperation(value = "Update post", authorizations = {@Authorization(value = "apiKey")})
-    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 404, message = "Post not found"),
+            @ApiResponse(code = 400, message = "errors")})
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Response updatePost(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                @PathVariable("id") String postId,
                                @RequestPart("title") String title,
@@ -50,7 +60,10 @@ public class PostController {
     }
 
     @ApiOperation(value = "Delete post", authorizations = {@Authorization(value = "apiKey")})
-    @DeleteMapping("/{id}")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 404, message = "Post not found")})
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response deletePost(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                @PathVariable("id") String postId) {
         postService.deletePost(currentUser, postId);
@@ -58,7 +71,10 @@ public class PostController {
     }
 
     @ApiOperation(value = "Comment on a post", authorizations = {@Authorization(value = "apiKey")})
-    @PostMapping("/{id}/comments")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 404, message = "Post not found")})
+    @PostMapping(value = "/{id}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response commentPost(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                 @PathVariable("id") String postId,
                                 @Valid @RequestBody CommentRequestDTO commentRequestDTO) {
@@ -67,7 +83,11 @@ public class PostController {
     }
 
     @ApiOperation(value = "Update comment", authorizations = {@Authorization(value = "apiKey")})
-    @PutMapping("/{id}/comments/{commentId}")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 404, message = "Post/Comment not found"),
+            @ApiResponse(code = 400, message = "errors")})
+    @PutMapping(value = "/{id}/comments/{commentId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response commentPost(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                 @PathVariable("id") String postId,
                                 @PathVariable("commentId") String commentId,
@@ -77,7 +97,11 @@ public class PostController {
     }
 
     @ApiOperation(value = "Delete a comment", authorizations = {@Authorization(value = "apiKey")})
-    @DeleteMapping("/{id}/comments/{commentId}")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 404, message = "Post/Comment not found"),
+            @ApiResponse(code = 400, message = "errors")})
+    @DeleteMapping(value = "/{id}/comments/{commentId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response deleteComment(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                   @PathVariable("id") String postId,
                                   @PathVariable("commentId") String commentId) {
@@ -86,7 +110,10 @@ public class PostController {
     }
 
     @ApiOperation(value = "Like post", authorizations = {@Authorization(value = "apiKey")})
-    @PostMapping("/{id}/like")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 404, message = "Post not found")})
+    @PostMapping(value = "/{id}/like", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response likePost(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                              @PathVariable("id") String postId) {
         postService.like(currentUser, postId);
@@ -94,7 +121,10 @@ public class PostController {
     }
 
     @ApiOperation(value = "Unlike post", authorizations = {@Authorization(value = "apiKey")})
-    @PostMapping("/{id}/unlike")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 404, message = "Post not found")})
+    @PostMapping(value = "/{id}/unlike", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response unlikePost(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                @PathVariable("id") String postId) {
         postService.unlike(currentUser, postId);
