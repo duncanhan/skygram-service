@@ -99,7 +99,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public CommentDTO createComment(UserPrincipal currentUser, String postId, CommentRequestDTO commentRequestDTO) {
-        Post post = this.checkPermission(currentUser.getId(), postId);
+        Post post = this.get(postId);
         Comment comment = Mapper.map(commentRequestDTO, Comment.class);
         comment.setId(new ObjectId());
         comment.setCreatedDate(LocalDateTime.now());
@@ -112,15 +112,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void updateComment(UserPrincipal currentUser, String postId, String commentId, CommentRequestDTO commentRequestDTO) {
-        Post post = this.checkPermission(currentUser.getId(), postId);
-        post.updateComment(commentId, commentRequestDTO);
+        Post post = this.get(postId);
+        post.updateComment(commentId, currentUser.getId(), commentRequestDTO);
         postRepository.save(post);
     }
 
     @Override
     public void deleteComment(UserPrincipal currentUser, String postId, String commentId) throws ResourceNotFoundException {
-        Post post = this.checkPermission(currentUser.getId(), postId);
-        post.deleteComment(commentId);
+        Post post = this.get(postId);
+        post.deleteComment(commentId, currentUser.getId());
         postRepository.save(post);
     }
 

@@ -6,6 +6,7 @@ import com.mongodb.lang.Nullable;
 import java.util.*;
 
 import com.skyteam.skygram.dto.CommentRequestDTO;
+import com.skyteam.skygram.exception.NoPermissionException;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -155,20 +156,26 @@ public class Post {
         this.comments.add(comment);
     }
 
-    public void updateComment(String commentId, CommentRequestDTO commentRequestDTO) {
+    public void updateComment(String commentId, String userId, CommentRequestDTO commentRequestDTO) {
         if (CollectionUtils.isEmpty(this.comments)) return;
         for (Comment comment : this.comments) {
-            if (comment.getId().equals(comment)) {
+            if (comment.getId().equals(commentId)) {
+                if (!comment.getAuthor().equals(userId)) {
+                    throw new NoPermissionException();
+                }
                 comment.setText(commentRequestDTO.getText());
                 comment.setLastModifiedDate(LocalDateTime.now());
             }
         }
     }
 
-    public void deleteComment(String commentId) throws ResourceNotFoundException {
+    public void deleteComment(String commentId, String userId) {
         if (CollectionUtils.isEmpty(this.comments)) return;
         for (Comment comment : this.comments) {
             if (comment.getId() != null && comment.getId().toString().equals(commentId)) {
+                if (!comment.getAuthor().equals(userId)) {
+                    throw new NoPermissionException();
+                }
                 this.comments.remove(comment);
                 return;
             }

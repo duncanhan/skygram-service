@@ -8,6 +8,10 @@ public class NoPermissionException extends RuntimeException {
 
     private String message;
 
+    public NoPermissionException() {
+        super("No permission");
+    }
+
     public NoPermissionException(String message) {
         super(message);
         this.message = message;
