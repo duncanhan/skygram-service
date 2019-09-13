@@ -54,6 +54,9 @@ public class User implements Serializable {
     @Field("followings")
     private Set<String> followings;
 
+    @Field("profile_picture")
+    private String profilePicture;
+
     public User() {
         this.followers = new HashSet<>();
         this.followings = new HashSet<>();
@@ -74,6 +77,14 @@ public class User implements Serializable {
 //        this.roles = roles;
 //        this.followers
 //    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
 
     public String getId() {
         return id;
