@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.TypeAlias;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.util.CollectionUtils;
@@ -23,14 +25,16 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Document(collection = "posts")
+@TypeAlias("Post")
 public class Post {
 
     @Id
     private String id;
 
     @NonNull
+    @DBRef
     @Field(value = "author")
-    private String author;
+    private User author;
 
     @Field(value = "title")
     private String title;
@@ -43,32 +47,29 @@ public class Post {
     private LocalDateTime lastModifiedDate;
 
     @Field(value = "hashtags")
-    private Set<String> hashtags;
+    private Set<String> hashtags = new HashSet<>();
 
     @Field(value = "location")
     private Location location;
 
     @Field(value = "media")
-    private List<Media> media;
+    private List<Media> media = new ArrayList<>();
 
     @Nullable
     @Field(value = "comments")
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
     @Nullable
     @Field(value = "likes")
-    private Set<String> likes;
+    private Set<String> likes = new HashSet<>();
 
     public Post(String author, String title, Set<String> hashtags, Location location) {
-        this.author = author;
+        this.author = new User(author);
         this.title = title;
         this.postedDate = LocalDateTime.now();
         this.lastModifiedDate = LocalDateTime.now();
         this.hashtags = hashtags;
         this.location = location;
-        this.media = new ArrayList<>();
-        this.comments = new ArrayList<>();
-        this.likes = new HashSet<>();
     }
 
     public void addComment(Comment comment) {

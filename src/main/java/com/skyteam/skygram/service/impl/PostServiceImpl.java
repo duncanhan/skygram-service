@@ -57,7 +57,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDTO createPost(UserPrincipal currentUser, String title, MultipartFile[] files, String[] location, String[] hashtags) throws IOException {
-        Post post = new Post(currentUser.getId(), title, new HashSet<>(Arrays.asList(hashtags)), new Location(location));
+        Post post = new Post(currentUser.getId(), title, hashtags != null ? new HashSet<>(Arrays.asList(hashtags)) : new HashSet<>(), new Location(location));
         postRepository.save(post);
 
         Media media;
@@ -104,7 +104,7 @@ public class PostServiceImpl implements PostService {
         comment.setId(new ObjectId());
         comment.setCreatedDate(LocalDateTime.now());
         comment.setLastModifiedDate(LocalDateTime.now());
-        comment.setAuthor(currentUser.getId());
+        comment.setAuthor(new User(currentUser.getId()));
         post.addComment(comment);
         postRepository.save(post);
         return Mapper.map(comment, CommentDTO.class);

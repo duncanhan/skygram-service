@@ -18,9 +18,9 @@ public class PostDTO {
 
     private String id;
 
-    private String author;
-
     private String title;
+
+    private AuthorDTO author;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("posted_date")

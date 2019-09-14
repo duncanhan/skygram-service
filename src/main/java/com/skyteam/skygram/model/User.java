@@ -1,8 +1,10 @@
 package com.skyteam.skygram.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -17,7 +19,9 @@ import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Document(collection = "users")
+@TypeAlias("User")
 public class User implements Serializable {
 
     @Id
@@ -51,21 +55,19 @@ public class User implements Serializable {
     private LocalDateTime signupDate;
 
     @Field("roles")
-    private List<String> roles;
+    private List<String> roles = new ArrayList<>();
 
     @Field("followers")
-    private Set<String> followers;
+    private Set<String> followers = new HashSet<>();
 
     @Field("followings")
-    private Set<String> followings;
+    private Set<String> followings = new HashSet<>();
 
     @Field("profile_picture")
     private String profilePicture;
 
-    public User() {
-        this.roles = new ArrayList<>();
-        this.followers = new HashSet<>();
-        this.followings = new HashSet<>();
+    public User(String id) {
+        this.id = id;
     }
 
     public void follow(String userId) {
