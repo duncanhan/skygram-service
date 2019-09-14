@@ -40,7 +40,7 @@ public class AppExceptionHandler {
     public Response handleException(Exception e) {
         String errorMsg = "Exception";
         if (e != null) {
-            errorMsg = e.getCause().getLocalizedMessage();
+            errorMsg = e.getCause() != null ? e.getCause().getLocalizedMessage() : e.getLocalizedMessage();
         }
         return ResponseBuilder.buildFail(errorMsg);
     }

@@ -154,6 +154,6 @@ public class PostController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getTimelinePosts(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                      @PathVariable("id") String postId) {
-        return ResponseBuilder.buildSuccess(postService.getPostDetail(postId));
+        return ResponseBuilder.buildSuccess(postService.getPostDetail(currentUser, postId));
     }
 }

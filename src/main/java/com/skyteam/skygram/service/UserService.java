@@ -11,7 +11,7 @@ public interface UserService {
 
     UserDTO addUser(UserRequestDTO userRequestDTO);
 
-    Page<UserDTO> getListUsers(Pageable page);
+    Page<UserDTO> getListUsers(UserPrincipal currentUser, Pageable page);
 
     Page<UserDTO> search(String q, Pageable page);
 
@@ -23,5 +23,5 @@ public interface UserService {
 
     void unfollow(UserPrincipal currentUser, String username);
 
-    UserDTO getUser(String username);
+    UserDTO getUser(UserPrincipal currentUser, String username);
 }

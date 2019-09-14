@@ -37,8 +37,9 @@ public class UserController {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "Internal errors")})
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response getListUsers(@ModelAttribute PageDTO pageDTO) {
-        Page<UserDTO> users = userService.getListUsers(PageUtil.initPage(pageDTO));
+    public Response getListUsers(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                 @ModelAttribute PageDTO pageDTO) {
+        Page<UserDTO> users = userService.getListUsers(currentUser, PageUtil.initPage(pageDTO));
         return ResponseBuilder.buildSuccess(users);
     }
 
@@ -47,7 +48,8 @@ public class UserController {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "Internal errors")})
     @PutMapping(value = "/me/profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response updateProfile(@ApiIgnore UserPrincipal currentUser, @ApiParam(value = "User profile information", required = true) @Valid @RequestBody UserDTO body) {
+    public Response updateProfile(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                  @ApiParam(value = "User profile information", required = true) @Valid @RequestBody UserDTO body) {
         userService.updateUser(currentUser, body);
         return ResponseBuilder.buildSuccess("User is updated");
     }
@@ -90,7 +92,7 @@ public class UserController {
     @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserProfile(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                    @Valid @PathVariable("username") @NotBlank(message = "Username is required") String username) {
-        return ResponseBuilder.buildSuccess(userService.getUser(username));
+        return ResponseBuilder.buildSuccess(userService.getUser(currentUser, username));
     }
 
     @ApiOperation(value = "Get posts by username", authorizations = {@Authorization(value = "apiKey")})
@@ -99,11 +101,12 @@ public class UserController {
             @ApiResponse(code = 404, message = "Username not found"),
             @ApiResponse(code = 500, message = "Internal errors")})
     @GetMapping(value = "/{username}/posts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response getPostsByUsername(@PathVariable("username") String username,
+    public Response getPostsByUsername(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                       @PathVariable("username") String username,
                                        @ModelAttribute PageDTO pageDTO) {
-        UserDTO userDTO = userService.getUser(username);
-        return ResponseBuilder
-                .buildSuccess(postService.getPostsByUser(userDTO.getId(), PageUtil.initPage(pageDTO, new Sort(
-                        Direction.DESC, "date"))));
+        UserDTO userDTO = userService.getUser(currentUser, username);
+        return ResponseBuilder.buildSuccess(
+                postService.getPostsByUser(userDTO.getId(), PageUtil.initPage(pageDTO, new Sort(Direction.DESC, "date")))
+        );
     }
 }

@@ -52,7 +52,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostDTO> getPostsByUser(String id, Pageable pageable) {
         Page<Post> page = postRepository.findByAuthor(id, pageable);
-        return Mapper.mapPage(page, PostDTO.class);
+        return this.mapPage(page, id);
     }
 
     @Override
@@ -155,12 +155,20 @@ public class PostServiceImpl implements PostService {
             authors.addAll(followings);
         }
         Page<Post> posts = postRepository.findByAuthorIn(authors, page);
-        return Mapper.mapPage(posts, PostDTO.class);
+        return this.mapPage(posts, currentUser.getId());
     }
 
     @Override
-    public PostDTO getPostDetail(String postId) {
-        return Mapper.map(this.get(postId), PostDTO.class);
+    public PostDTO getPostDetail(UserPrincipal currentUser, String postId) {
+        Post post = this.get(postId);
+        PostDTO postDTO = Mapper.map(post, PostDTO.class);
+        if (post.getLikes() != null && post.getLikes().contains(currentUser.getId())) {
+            postDTO.setLiked(true);
+        }
+        if (post.getAuthor().equals(currentUser.getId())) {
+            postDTO.setOwned(true);
+        }
+        return postDTO;
     }
 
     /**
@@ -204,5 +212,25 @@ public class PostServiceImpl implements PostService {
             media = new Photo(postId + "_" + count, uploadResult.get("url").toString(), uploadResult.get("format").toString(), FileType.OTHER);
         }
         return media;
+    }
+
+    /**
+     * Map page post to postDTO
+     * @param posts
+     * @param currentUserId
+     * @return
+     */
+    private Page<PostDTO> mapPage(Page<Post> posts, String currentUserId) {
+        if (posts == null) return null;
+        return posts.map(post -> {
+            PostDTO dto = Mapper.map(post, PostDTO.class);
+            if (post.getLikes() != null && post.getLikes().contains(currentUserId)) {
+                dto.setLiked(true);
+            }
+            if (post.getAuthor().equals(currentUserId)) {
+                dto.setOwned(true);
+            }
+            return dto;
+        });
     }
 }

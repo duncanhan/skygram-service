@@ -32,5 +32,5 @@ public interface PostService {
 
     Page<PostDTO> getTimelinePosts(UserPrincipal currentUser, Pageable page);
 
-    PostDTO getPostDetail(String postId);
+    PostDTO getPostDetail(UserPrincipal currentUser, String postId);
 }

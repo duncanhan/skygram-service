@@ -2,11 +2,17 @@ package com.skyteam.skygram.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class UserDTO {
 
     private String id;
@@ -28,92 +34,17 @@ public class UserDTO {
     private LocalDate birthday;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonProperty("signup_date")
     private LocalDateTime signupDate;
 
+    @JsonProperty("num_of_followers")
     private int numOfFollowers;
 
+    @JsonProperty("num_of_followings")
     private int numOfFollowings;
 
-    public UserDTO() {
-    }
+    @JsonProperty("is_following")
+    private boolean isFollowing;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-    }
-
-    public LocalDateTime getSignupDate() {
-        return signupDate;
-    }
-
-    public void setSignupDate(LocalDateTime signupDate) {
-        this.signupDate = signupDate;
-    }
-
-    public void setNumOfFollowers(int numOfFollowers) {
-        this.numOfFollowers = numOfFollowers;
-    }
-
-    public int getNumOfFollowers() {
-        return numOfFollowers;
-    }
-
-    public void setNumOfFollowings(int numOfFollowings) {
-        this.numOfFollowings = numOfFollowings;
-    }
-
-    public int getNumOfFollowings() {
-        return numOfFollowings;
-    }
+    private boolean followed;
 }

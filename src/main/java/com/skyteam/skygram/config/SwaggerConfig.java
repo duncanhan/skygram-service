@@ -25,6 +25,9 @@ public class SwaggerConfig {
     @Value("${spring.profiles.active}")
     private String env;
 
+    @Value("${application.version}")
+    private String version;
+
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -41,8 +44,8 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("SkyGram API")
-                .version("1.0.0")
-                .contact(new Contact("SkyTeam", null, "cdoan@mum.edu"))
+                .version(version)
+                .contact(new Contact("SkyTeam", "skygram.com", "cdoan@mum.edu"))
                 .build();
     }
 

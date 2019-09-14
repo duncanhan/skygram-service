@@ -8,6 +8,9 @@ import java.util.*;
 import com.skyteam.skygram.dto.CommentRequestDTO;
 import com.skyteam.skygram.exception.NoPermissionException;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -16,6 +19,9 @@ import org.springframework.util.CollectionUtils;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Document(collection = "posts")
 public class Post {
 
@@ -63,90 +69,6 @@ public class Post {
         this.media = new ArrayList<>();
         this.comments = new ArrayList<>();
         this.likes = new HashSet<>();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public LocalDateTime getPostedDate() {
-        return postedDate;
-    }
-
-    public void setPostedDate(LocalDateTime postedDate) {
-        this.postedDate = postedDate;
-    }
-
-    public LocalDateTime getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Set<String> getHashtags() {
-        return hashtags;
-    }
-
-    public void setHashtags(Set<String> hashtags) {
-        this.hashtags = hashtags;
-    }
-
-    public void setHashtags(String[] hashtags) {
-        this.hashtags = new HashSet<>(Arrays.asList(hashtags));
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public List<Media> getMedia() {
-        return media;
-    }
-
-    public void setMedia(List<Media> media) {
-        this.media = media;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public Set<String> getLikes() {
-        return likes;
-    }
-
-    public void setLikes(Set<String> likes) {
-        this.likes = likes;
     }
 
     public void addComment(Comment comment) {

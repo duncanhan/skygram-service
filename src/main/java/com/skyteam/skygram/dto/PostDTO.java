@@ -4,10 +4,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skyteam.skygram.model.Location;
 import com.skyteam.skygram.model.Media;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class PostDTO {
 
     private String id;
@@ -28,92 +34,16 @@ public class PostDTO {
 
     private List<CommentDTO> comments;
 
+    @JsonProperty("num_of_likes")
     private int numOfLikes;
 
     private List<Media> media;
 
     private String[] hashtags;
 
-    public PostDTO() {
-    }
+    @JsonProperty("is_liked")
+    private boolean isLiked;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public LocalDateTime getPostedDate() {
-        return postedDate;
-    }
-
-    public void setPostedDate(LocalDateTime postedDate) {
-        this.postedDate = postedDate;
-    }
-
-    public LocalDateTime getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public List<CommentDTO> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<CommentDTO> comments) {
-        this.comments = comments;
-    }
-
-    public int getNumOfLikes() {
-        return numOfLikes;
-    }
-
-    public void setNumOfLikes(int numOfLikes) {
-        this.numOfLikes = numOfLikes;
-    }
-
-    public List<Media> getMedia() {
-        return media;
-    }
-
-    public void setMedia(List<Media> media) {
-        this.media = media;
-    }
-
-    public String[] getHashtags() {
-        return hashtags;
-    }
-
-    public void setHashtags(String[] hashtags) {
-        this.hashtags = hashtags;
-    }
+    @JsonProperty("is_owned")
+    private boolean isOwned;
 }
