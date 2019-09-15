@@ -82,21 +82,23 @@ public class Post {
     public void updateComment(String commentId, String userId, CommentRequestDTO commentRequestDTO) {
         if (CollectionUtils.isEmpty(this.comments)) return;
         for (Comment comment : this.comments) {
-            if (comment.getId().equals(commentId)) {
-                if (!comment.getAuthor().equals(userId)) {
+            if (comment.getId().toString().equals(commentId)) {
+                if (!comment.getAuthor().getId().equals(userId)) {
                     throw new NoPermissionException();
                 }
                 comment.setText(commentRequestDTO.getText());
                 comment.setLastModifiedDate(LocalDateTime.now());
+                return;
             }
         }
+        throw new ResourceNotFoundException("Comment", "id", commentId);
     }
 
     public void deleteComment(String commentId, String userId) {
         if (CollectionUtils.isEmpty(this.comments)) return;
         for (Comment comment : this.comments) {
             if (comment.getId() != null && comment.getId().toString().equals(commentId)) {
-                if (!comment.getAuthor().equals(userId)) {
+                if (!comment.getAuthor().getId().equals(userId)) {
                     throw new NoPermissionException();
                 }
                 this.comments.remove(comment);
@@ -114,10 +116,9 @@ public class Post {
     }
 
     public void unlikeBy(String userId) {
-        if (this.likes == null) {
-            this.likes = new HashSet<>();
+        if (this.likes != null && !this.likes.isEmpty()) {
+            this.likes.remove(userId);
         }
-        this.likes.remove(userId);
     }
 
     public void addMedia(Media media) {

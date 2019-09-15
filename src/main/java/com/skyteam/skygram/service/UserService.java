@@ -7,21 +7,23 @@ import com.skyteam.skygram.security.UserPrincipal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+
 public interface UserService {
 
     UserDTO addUser(UserRequestDTO userRequestDTO);
 
     Page<UserDTO> getListUsers(UserPrincipal currentUser, Pageable page);
 
-    Page<UserDTO> search(String q, Pageable page);
-
     Page<SearchResponseDTO> searchForHome(String q, Pageable page);
 
-    void updateUser(UserPrincipal currentUser, UserDTO userDTO);
+    boolean updateUser(UserPrincipal currentUser, UserDTO userDTO);
 
-    void follow(UserPrincipal currentUser, String username);
+    boolean follow(UserPrincipal currentUser, String username);
 
-    void unfollow(UserPrincipal currentUser, String username);
+    boolean unfollow(UserPrincipal currentUser, String username);
 
     UserDTO getUser(UserPrincipal currentUser, String username);
+
+    long getNumOfRegistrations(LocalDate date);
 }

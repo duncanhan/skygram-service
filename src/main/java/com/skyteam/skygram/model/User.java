@@ -1,5 +1,6 @@
 package com.skyteam.skygram.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -70,16 +72,14 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public void follow(String userId) {
-        this.followings.add(userId);
+    public void follow(@NotNull User user) {
+        this.followings.add(user.getId());
+        user.getFollowers().add(this.getId());
     }
 
-    public void followedBy(String userId) {
-        this.followers.add(userId);
-    }
-
-    public void unfollow(String userId) {
-        this.followings.remove(userId);
+    public void unfollow(@NotNull User user) {
+        this.followings.remove(user.getId());
+        user.getFollowers().remove(this.getId());
     }
 
     public int getNumOfFollowers() {

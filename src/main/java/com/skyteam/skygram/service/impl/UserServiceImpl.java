@@ -1,12 +1,10 @@
 package com.skyteam.skygram.service.impl;
 
 import com.skyteam.skygram.common.Constants;
-import com.skyteam.skygram.dto.PostDTO;
 import com.skyteam.skygram.dto.SearchResponseDTO;
 import com.skyteam.skygram.dto.UserDTO;
 import com.skyteam.skygram.dto.UserRequestDTO;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
-import com.skyteam.skygram.model.Post;
 import com.skyteam.skygram.model.User;
 import com.skyteam.skygram.repository.UserRepository;
 import com.skyteam.skygram.security.UserPrincipal;
@@ -17,13 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 
-@Transactional
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -44,7 +42,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         user.setSignupDate(LocalDateTime.now());
         user.setRoles(Collections.singletonList(Constants.ROLE_USER));
-        userRepository.save(user);
+        user = userRepository.save(user);
         return Mapper.map(user, UserDTO.class);
     }
 
@@ -55,19 +53,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDTO> search(String q, Pageable page) {
-        Page<User> users = userRepository.findByUsernameStartsWith(q, page);
-        return Mapper.mapPage(users, UserDTO.class);
-    }
-
-    @Override
     public Page<SearchResponseDTO> searchForHome(String q, Pageable page) {
         Page<User> users = userRepository.findByUsernameStartsWith(q, page);
         return users.map(user -> new SearchResponseDTO(user.getId(), null, user.getUsername(), user.getFirstName() + " " + user.getLastName()));
     }
 
     @Override
-    public void updateUser(UserPrincipal currentUser, UserDTO userDTO) {
+    public boolean updateUser(UserPrincipal currentUser, UserDTO userDTO) {
         User user = this.get(currentUser.getId());
         if (StringUtils.hasText(userDTO.getFirstName())) {
             user.setFirstName(userDTO.getFirstName());
@@ -79,26 +71,28 @@ public class UserServiceImpl implements UserService {
             user.setBirthday(userDTO.getBirthday());
         }
         userRepository.save(user);
+        return true;
     }
 
     @Override
-    public void follow(UserPrincipal currentUser, String username) {
+    public boolean follow(UserPrincipal currentUser, String username) {
         User follower = this.get(currentUser.getId());
         User followee = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-        follower.follow(followee.getId());
-        followee.followedBy(follower.getId());
+        follower.follow(followee);
         userRepository.save(followee);
         userRepository.save(follower);
+        return true;
     }
 
     @Override
-    public void unfollow(UserPrincipal currentUser, String username) {
+    public boolean unfollow(UserPrincipal currentUser, String username) {
         User follower = this.get(currentUser.getId());
         User followee = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-        follower.unfollow(followee.getId());
+        follower.unfollow(followee);
         userRepository.save(follower);
+        return true;
     }
 
     @Override
@@ -113,6 +107,13 @@ public class UserServiceImpl implements UserService {
             dto.setFollowing(true);
         }
         return dto;
+    }
+
+    @Override
+    public long getNumOfRegistrations(LocalDate date) {
+        LocalDateTime start = LocalDateTime.of(date, LocalTime.of(0, 0, 0));
+        LocalDateTime end = LocalDateTime.of(date, LocalTime.of(23, 59, 59));
+        return userRepository.countBySignupDateBetween(start, end);
     }
 
     /**

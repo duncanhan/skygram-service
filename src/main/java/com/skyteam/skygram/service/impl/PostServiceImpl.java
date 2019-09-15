@@ -26,7 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -50,9 +52,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostDTO> getPostsByUser(String id, Pageable pageable) {
-        Page<Post> page = postRepository.findByAuthor(id, pageable);
-        return this.mapPage(page, id);
+    public Page<PostDTO> getPostsByUser(UserPrincipal currentUser, String username, Pageable pageable) {
+        User author = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+        Page<Post> page = postRepository.findByAuthor(author.getId(), pageable);
+        return this.mapPage(page, currentUser.getId());
     }
 
     @Override
@@ -69,13 +73,12 @@ public class PostServiceImpl implements PostService {
         if (post.getMedia().isEmpty()) {
             throw new AppException("Please add an image");
         }
-        postRepository.save(post);
-
+        post = postRepository.save(post);
         return Mapper.map(post, PostDTO.class);
     }
 
     @Override
-    public void updatePost(UserPrincipal currentUser, String postId, String title, MultipartFile[] files, String[] location, String[] hashtags) throws IOException {
+    public boolean updatePost(UserPrincipal currentUser, String postId, String title, MultipartFile[] files, String[] location, String[] hashtags) throws IOException {
         Post post = this.checkPermission(currentUser.getId(), postId);
         post.setTitle(title);
         post.setLocation(new Location(location));
@@ -89,12 +92,14 @@ public class PostServiceImpl implements PostService {
             throw new AppException("Please add an image");
         }
         postRepository.save(post);
+        return true;
     }
 
     @Override
-    public void deletePost(UserPrincipal currentUser, String postId) {
+    public boolean deletePost(UserPrincipal currentUser, String postId) {
         Post post = this.checkPermission(currentUser.getId(), postId);
         postRepository.delete(post);
+        return true;
     }
 
     @Override
@@ -111,31 +116,35 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void updateComment(UserPrincipal currentUser, String postId, String commentId, CommentRequestDTO commentRequestDTO) {
+    public boolean updateComment(UserPrincipal currentUser, String postId, String commentId, CommentRequestDTO commentRequestDTO) {
         Post post = this.get(postId);
         post.updateComment(commentId, currentUser.getId(), commentRequestDTO);
         postRepository.save(post);
+        return true;
     }
 
     @Override
-    public void deleteComment(UserPrincipal currentUser, String postId, String commentId) throws ResourceNotFoundException {
+    public boolean deleteComment(UserPrincipal currentUser, String postId, String commentId) throws ResourceNotFoundException {
         Post post = this.get(postId);
         post.deleteComment(commentId, currentUser.getId());
         postRepository.save(post);
+        return true;
     }
 
     @Override
-    public void like(UserPrincipal currentUser, String postId) {
+    public boolean like(UserPrincipal currentUser, String postId) {
         Post post = this.get(postId);
         post.likedBy(currentUser.getId());
         postRepository.save(post);
+        return true;
     }
 
     @Override
-    public void unlike(UserPrincipal currentUser, String postId) {
+    public boolean unlike(UserPrincipal currentUser, String postId) {
         Post post = this.get(postId);
         post.unlikeBy(currentUser.getId());
         postRepository.save(post);
+        return true;
     }
 
     @Override
@@ -165,10 +174,17 @@ public class PostServiceImpl implements PostService {
         if (post.getLikes() != null && post.getLikes().contains(currentUser.getId())) {
             postDTO.setLiked(true);
         }
-        if (post.getAuthor().equals(currentUser.getId())) {
+        if (post.getAuthor().getId().equals(currentUser.getId())) {
             postDTO.setOwned(true);
         }
         return postDTO;
+    }
+
+    @Override
+    public long getNumOfPosts(LocalDate date) {
+        LocalDateTime start = LocalDateTime.of(date, LocalTime.of(0, 0, 0));
+        LocalDateTime end = LocalDateTime.of(date, LocalTime.of(23, 59, 59));
+        return postRepository.countByPostedDateBetween(start, end);
     }
 
     /**
@@ -180,7 +196,7 @@ public class PostServiceImpl implements PostService {
      */
     private Post checkPermission(String userId, String postId) {
         Post post = this.get(postId);
-        if (!post.getAuthor().equals(userId)) {
+        if (!post.getAuthor().getId().equals(userId)) {
             throw new NoPermissionException("You DO NOT have permission to do this action");
         }
         return post;
@@ -227,7 +243,7 @@ public class PostServiceImpl implements PostService {
             if (post.getLikes() != null && post.getLikes().contains(currentUserId)) {
                 dto.setLiked(true);
             }
-            if (post.getAuthor().equals(currentUserId)) {
+            if (post.getAuthor().getId().equals(currentUserId)) {
                 dto.setOwned(true);
             }
             return dto;

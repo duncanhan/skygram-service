@@ -1,9 +1,13 @@
 package com.skyteam.skygram.model;
 
 import com.skyteam.skygram.service.file.FileType;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+@Getter
+@Setter
 @Document
 public abstract class Media {
 
@@ -41,37 +45,5 @@ public abstract class Media {
         } else {
             setType(FileType.OTHER);
         }
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getFileFormat() {
-        return fileFormat;
-    }
-
-    public void setFileFormat(String fileFormat) {
-        this.fileFormat = fileFormat;
-    }
-
-    public FileType getType() {
-        return type;
-    }
-
-    public void setType(FileType type) {
-        this.type = type;
     }
 }

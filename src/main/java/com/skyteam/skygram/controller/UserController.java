@@ -104,9 +104,8 @@ public class UserController {
     public Response getPostsByUsername(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                        @PathVariable("username") String username,
                                        @ModelAttribute PageDTO pageDTO) {
-        UserDTO userDTO = userService.getUser(currentUser, username);
         return ResponseBuilder.buildSuccess(
-                postService.getPostsByUser(userDTO.getId(), PageUtil.initPage(pageDTO, new Sort(Direction.DESC, "date")))
+                postService.getPostsByUser(currentUser, username, PageUtil.initPage(pageDTO, new Sort(Direction.DESC, "date")))
         );
     }
 }
