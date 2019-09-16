@@ -82,7 +82,8 @@ public class PostServiceImpl implements PostService {
         Post post = this.checkPermission(currentUser.getId(), postId);
         post.setTitle(title);
         post.setLocation(new Location(location));
-        post.setHashtags(new HashSet<>(Arrays.asList(hashtags)));
+        post.setHashtags(hashtags != null ? new HashSet<>(Arrays.asList(hashtags)) : new HashSet<>());
+        post.setLastModifiedDate(LocalDateTime.now());
         Media media;
         for (MultipartFile file : files) {
             media = this.upload(file, 1, postId);
