@@ -1,7 +1,16 @@
 package com.skyteam.skygram.common;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.io.Serializable;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PageDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -9,25 +18,4 @@ public class PageDTO implements Serializable {
     private Integer page;
 
     private Integer size;
-
-    public PageDTO(Integer page, Integer size) {
-        this.page = page;
-        this.size = size;
-    }
-
-    public Integer getPage() {
-        return page;
-    }
-
-    public void setPage(Integer page) {
-        this.page = page;
-    }
-
-    public Integer getSize() {
-        return size;
-    }
-
-    public void setSize(Integer size) {
-        this.size = size;
-    }
 }

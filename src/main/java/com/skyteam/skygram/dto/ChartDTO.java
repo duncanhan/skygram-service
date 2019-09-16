@@ -16,8 +16,8 @@ public class ChartDTO {
 
     private LocalDate date;
 
-    @JsonProperty("num_of_registration")
-    private long numOfRegistration;
+    @JsonProperty("num_of_registrations")
+    private long numOfRegistrations;
 
     @JsonProperty("num_of_posts")
     private long numOfPosts;

@@ -118,9 +118,9 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Map page user to userDTO
-     * @param users
-     * @param currentUserId
-     * @return
+     * @param users users page
+     * @param currentUserId current userId
+     * @return userDTO page
      */
     private Page<UserDTO> mapPage(Page<User> users, String currentUserId) {
         if (users == null) return null;

@@ -111,7 +111,7 @@ public class PostController {
                                   @PathVariable("id") String postId,
                                   @PathVariable("commentId") String commentId) {
         postService.deleteComment(currentUser, postId, commentId);
-        return ResponseBuilder.buildSuccess();
+        return ResponseBuilder.buildSuccess("Comment is deleted", null);
     }
 
     @ApiOperation(value = "Like post", authorizations = {@Authorization(value = "apiKey")})
@@ -143,7 +143,7 @@ public class PostController {
     @GetMapping(value = "/timeline", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getTimelinePosts(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                      @ModelAttribute PageDTO pageDTO) {
-        Page<PostDTO> posts= postService.getTimelinePosts(currentUser, PageUtil.initPage(pageDTO, new Sort(Sort.Direction.DESC, "postedDate")));
+        Page<PostDTO> posts = postService.getTimelinePosts(currentUser, PageUtil.initPage(pageDTO, new Sort(Sort.Direction.DESC, "postedDate")));
         return ResponseBuilder.buildSuccess(posts);
     }
 
@@ -152,8 +152,8 @@ public class PostController {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "errors")})
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response getTimelinePosts(@ApiIgnore @CurrentUser UserPrincipal currentUser,
-                                     @PathVariable("id") String postId) {
+    public Response getPostDetail(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                  @PathVariable("id") String postId) {
         return ResponseBuilder.buildSuccess(postService.getPostDetail(currentUser, postId));
     }
 }

@@ -3,6 +3,7 @@ package com.skyteam.skygram.controller;
 import com.skyteam.skygram.common.PageDTO;
 import com.skyteam.skygram.core.Response;
 import com.skyteam.skygram.core.ResponseBuilder;
+import com.skyteam.skygram.dto.PostDTO;
 import com.skyteam.skygram.dto.UserDTO;
 import com.skyteam.skygram.exception.AppException;
 import com.skyteam.skygram.security.CurrentUser;
@@ -62,7 +63,7 @@ public class UserController {
     @PostMapping(value = "/{username}/follow", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response follow(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                            @Valid @PathVariable("username") @NotBlank(message = "Username is required") String username) {
-        if (currentUser.getUsername().equals(username)) {
+        if (currentUser != null && currentUser.getUsername().equals(username)) {
             throw new AppException("Can not follow yourself");
         }
         userService.follow(currentUser, username);
@@ -77,7 +78,7 @@ public class UserController {
     @PostMapping(value = "/{username}/unfollow", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response unfollow(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                              @Valid @PathVariable("username") @NotBlank(message = "Username is required") String username) {
-        if (currentUser.getUsername().equals(username)) {
+        if (currentUser != null && currentUser.getUsername().equals(username)) {
             throw new AppException("Can not unfollow yourself");
         }
         userService.unfollow(currentUser, username);
@@ -104,8 +105,7 @@ public class UserController {
     public Response getPostsByUsername(@ApiIgnore @CurrentUser UserPrincipal currentUser,
                                        @PathVariable("username") String username,
                                        @ModelAttribute PageDTO pageDTO) {
-        return ResponseBuilder.buildSuccess(
-                postService.getPostsByUser(currentUser, username, PageUtil.initPage(pageDTO, new Sort(Direction.DESC, "date")))
-        );
+        Page<PostDTO> page = postService.getPostsByUser(currentUser, username, PageUtil.initPage(pageDTO, new Sort(Direction.DESC, "date")));
+        return ResponseBuilder.buildSuccess(page);
     }
 }

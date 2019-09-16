@@ -6,6 +6,7 @@ import com.skyteam.skygram.dto.CommentDTO;
 import com.skyteam.skygram.dto.CommentRequestDTO;
 import com.skyteam.skygram.dto.PostDTO;
 import com.skyteam.skygram.dto.SearchResponseDTO;
+import com.skyteam.skygram.enumerable.FileType;
 import com.skyteam.skygram.exception.AppException;
 import com.skyteam.skygram.exception.NoPermissionException;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
@@ -14,7 +15,6 @@ import com.skyteam.skygram.repository.PostRepository;
 import com.skyteam.skygram.repository.UserRepository;
 import com.skyteam.skygram.security.UserPrincipal;
 import com.skyteam.skygram.service.PostService;
-import com.skyteam.skygram.service.file.FileType;
 import com.skyteam.skygram.util.Mapper;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -149,8 +149,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<SearchResponseDTO> searchHashtags(String q, Pageable page) {
-//        Page<User> users = postRepository.findByUsernameStartsWith(q, page);
-//        return users.map(user -> new SearchResponseDTO(user.getId(), null, user.getUsername(), user.getFirstName() + " " + user.getLastName()));
+        // TODO later
         return null;
     }
 
@@ -221,11 +220,11 @@ public class PostServiceImpl implements PostService {
         }
         Media media;
         if (uploadResult.get("resource_type").toString().equals("image")) {
-            media = new Photo(postId + "_" + count, uploadResult.get("url").toString(), uploadResult.get("format").toString(), FileType.PHOTO);
+            media = new Photo(postId + "_" + count, uploadResult.get("url").toString(), uploadResult.get("format").toString(), FileType.IMAGE.getValue());
         } else if (uploadResult.get("resource_type").toString().equals("video")) {
-            media = new Video(postId + "_" + count, uploadResult.get("url").toString(), uploadResult.get("format").toString(), FileType.VIDEO, 0);
+            media = new Video(postId + "_" + count, uploadResult.get("url").toString(), uploadResult.get("format").toString(), FileType.VIDEO.getValue(), 0);
         } else {
-            media = new Photo(postId + "_" + count, uploadResult.get("url").toString(), uploadResult.get("format").toString(), FileType.OTHER);
+            media = new Photo(postId + "_" + count, uploadResult.get("url").toString(), uploadResult.get("format").toString(), FileType.OTHER.getValue());
         }
         return media;
     }

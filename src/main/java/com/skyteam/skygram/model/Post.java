@@ -2,9 +2,6 @@ package com.skyteam.skygram.model;
 
 import com.mongodb.lang.NonNull;
 import com.mongodb.lang.Nullable;
-
-import java.util.*;
-
 import com.skyteam.skygram.dto.CommentRequestDTO;
 import com.skyteam.skygram.exception.NoPermissionException;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
@@ -20,6 +17,10 @@ import org.springframework.util.CollectionUtils;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -109,29 +110,18 @@ public class Post {
     }
 
     public void likedBy(String userId) {
-        if (this.likes == null) {
-            this.likes = new HashSet<>();
-        }
         this.likes.add(userId);
     }
 
     public void unlikeBy(String userId) {
-        if (this.likes != null && !this.likes.isEmpty()) {
-            this.likes.remove(userId);
-        }
+        this.likes.remove(userId);
     }
 
     public void addMedia(Media media) {
-        if (CollectionUtils.isEmpty(this.media)) {
-            this.media = new ArrayList<>();
-        }
         this.media.add(media);
     }
 
     public void updateMedia(Media media) {
-        if (CollectionUtils.isEmpty(this.media)) {
-            this.media = new ArrayList<>();
-        }
         this.media.clear();
         this.media.add(media);
     }

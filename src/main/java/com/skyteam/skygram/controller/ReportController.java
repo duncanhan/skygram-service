@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +36,9 @@ public class ReportController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "errors")})
-    @GetMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Response getReport(@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-                              @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getReport(@Valid @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+                              @Valid @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
         List<ChartDTO> charts = new ArrayList<>();
         for (LocalDate date = fromDate; !date.isAfter(toDate); date = date.plusDays(1)) {
             charts.add(new ChartDTO(date, userService.getNumOfRegistrations(date), postService.getNumOfPosts(date)));
