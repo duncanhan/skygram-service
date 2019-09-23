@@ -29,7 +29,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -85,11 +90,9 @@ public class PostServiceImpl implements PostService {
         post.setLocation(new Location(location));
         post.setHashtags(hashtags != null ? new HashSet<>(Arrays.asList(hashtags)) : new HashSet<>());
         post.setLastModifiedDate(LocalDateTime.now());
-        Media media;
-        for (MultipartFile file : files) {
-            media = this.upload(file, 1, postId);
-            post.updateMedia(media);
-        }
+
+        post = PostFunctional.UPDATE_POST.apply(files, post, this);
+
         if (post.getMedia().isEmpty()) {
             throw new AppException("Please add an image");
         }
@@ -212,7 +215,7 @@ public class PostServiceImpl implements PostService {
      * @return result
      * @throws IOException exception
      */
-    private Media upload(MultipartFile file, int count, String postId) throws IOException {
+    public Media upload(MultipartFile file, int count, String postId) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(
                 file.getBytes(),
                 ObjectUtils.asMap(
