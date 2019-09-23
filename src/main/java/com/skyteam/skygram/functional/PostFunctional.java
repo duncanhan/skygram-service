@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PostFunctional {
@@ -27,5 +28,9 @@ public class PostFunctional {
             .sorted(Comparator.comparing(Post::getPostedDate, Comparator.reverseOrder()))
             .skip(page.getPageNumber() * page.getPageSize())
             .limit(page.getPageSize())
+            .collect(Collectors.toList());
+
+    public static final BiFunction<List<Post>, String, List<Post>> GET_POST_BY_HASHTAG = (posts, s) -> posts.stream()
+            .filter(post -> post.getHashtags().contains(s))
             .collect(Collectors.toList());
 }
