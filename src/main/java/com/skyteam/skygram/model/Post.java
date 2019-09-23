@@ -5,6 +5,7 @@ import com.mongodb.lang.Nullable;
 import com.skyteam.skygram.dto.CommentRequestDTO;
 import com.skyteam.skygram.exception.NoPermissionException;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
+import com.skyteam.skygram.functional.PostFunctional;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Getter
 @Setter
@@ -82,7 +85,13 @@ public class Post {
 
     public void updateComment(String commentId, String userId, CommentRequestDTO commentRequestDTO) {
         if (CollectionUtils.isEmpty(this.comments)) return;
-        for (Comment comment : this.comments) {
+        String newComment = commentRequestDTO.getText();
+
+        boolean res = PostFunctional.UPDATE_COMMENT.apply(this.comments, commentId, userId, newComment);
+        if(!res){
+            throw new ResourceNotFoundException("Comment", "id", commentId);
+        }
+        /*for (Comment comment : this.comments) {
             if (comment.getId().toString().equals(commentId)) {
                 if (!comment.getAuthor().getId().equals(userId)) {
                     throw new NoPermissionException();
@@ -93,6 +102,7 @@ public class Post {
             }
         }
         throw new ResourceNotFoundException("Comment", "id", commentId);
+        */
     }
 
     public void deleteComment(String commentId, String userId) {

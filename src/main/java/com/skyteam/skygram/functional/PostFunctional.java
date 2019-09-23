@@ -1,5 +1,6 @@
 package com.skyteam.skygram.functional;
 
+import com.skyteam.skygram.model.Comment;
 import com.skyteam.skygram.model.Media;
 import com.skyteam.skygram.model.Post;
 import com.skyteam.skygram.model.User;
@@ -8,9 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,5 +45,17 @@ public class PostFunctional {
         Stream.iterate(0, x->x+1).limit(files.length)
                 .forEach(i -> post.updateMedia((Media)check.apply(files[i], i)));
         return post;
+    };
+
+    public static final QuadriFunction<List<Comment>, String, String, String, Boolean> UPDATE_COMMENT = (cmts, cid, uid, nc) -> {
+
+        Function<Comment, Boolean> commentFunc = (c) -> {
+            c.setText(nc);
+            c.setLastModifiedDate(LocalDateTime.now());
+            return true;
+        };
+        return cmts.stream().map(c -> cid.equals(c.getId().toString()) &&
+                c.getAuthor().getId().equals(uid) ?
+                commentFunc.apply(c): false ).reduce(false, (r, i) -> i ? true: i||r);
     };
 }
