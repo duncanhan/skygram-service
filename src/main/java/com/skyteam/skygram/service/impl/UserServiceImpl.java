@@ -5,6 +5,8 @@ import com.skyteam.skygram.dto.SearchResponseDTO;
 import com.skyteam.skygram.dto.UserDTO;
 import com.skyteam.skygram.dto.UserRequestDTO;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
+import com.skyteam.skygram.functional.CommonFunctional;
+import com.skyteam.skygram.functional.UserFunctional;
 import com.skyteam.skygram.model.User;
 import com.skyteam.skygram.repository.UserRepository;
 import com.skyteam.skygram.security.UserPrincipal;
@@ -12,6 +14,7 @@ import com.skyteam.skygram.service.UserService;
 import com.skyteam.skygram.util.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,8 +22,8 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -31,7 +34,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private User get(String userId) {
+    @Override
+    public User get(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
     }
@@ -48,14 +52,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserDTO> getListUsers(UserPrincipal currentUser, Pageable page) {
-        Page<User> users = userRepository.findAll(page);
-        return this.mapPage(users, currentUser.getId());
+        List<User> allUsers = userRepository.findAll();
+        List<User> users = CommonFunctional.pagingUser.apply(allUsers, page);
+        return this.mapPage(new PageImpl<>(users, page, allUsers.size()), currentUser.getId());
     }
 
     @Override
     public Page<SearchResponseDTO> searchForHome(String q, Pageable page) {
-        Page<User> users = userRepository.findByUsernameStartsWith(q, page);
-        return users.map(user -> new SearchResponseDTO(user.getId(), null, user.getUsername(), user.getFirstName() + " " + user.getLastName()));
+//        Page<User> users = userRepository.findByUsernameStartsWith(q, page);
+//        return users.map(user -> new SearchResponseDTO(user.getId(), null, user.getUsername(), user.getFirstName() + " " + user.getLastName()));
+        //TODO
+        return null;
     }
 
     @Override
@@ -111,14 +118,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public long getNumOfRegistrations(LocalDate date) {
-        LocalDateTime start = LocalDateTime.of(date, LocalTime.of(0, 0, 0));
-        LocalDateTime end = LocalDateTime.of(date, LocalTime.of(23, 59, 59));
-        return userRepository.countBySignupDateBetween(start, end);
+        List<User> users = userRepository.findAll();
+        return UserFunctional.NUM_OF_REGISTRATIONS.apply(users, date);
     }
 
     /**
      * Map page user to userDTO
-     * @param users users page
+     *
+     * @param users         users page
      * @param currentUserId current userId
      * @return userDTO page
      */

@@ -88,4 +88,12 @@ public class User implements Serializable {
     public int getNumOfFollowings() {
         return this.followings != null ? this.followings.size() : 0;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof User) {
+            return ((User) obj).getId().equals(id);
+        }
+        return false;
+    }
 }

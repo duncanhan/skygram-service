@@ -10,17 +10,18 @@ import com.skyteam.skygram.enumerable.FileType;
 import com.skyteam.skygram.exception.AppException;
 import com.skyteam.skygram.exception.NoPermissionException;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
+import com.skyteam.skygram.functional.PostFunctional;
 import com.skyteam.skygram.model.*;
 import com.skyteam.skygram.repository.PostRepository;
 import com.skyteam.skygram.repository.UserRepository;
 import com.skyteam.skygram.security.UserPrincipal;
 import com.skyteam.skygram.service.PostService;
 import com.skyteam.skygram.util.Mapper;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -55,8 +55,9 @@ public class PostServiceImpl implements PostService {
     public Page<PostDTO> getPostsByUser(UserPrincipal currentUser, String username, Pageable pageable) {
         User author = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-        Page<Post> page = postRepository.findByAuthor(author.getId(), pageable);
-        return this.mapPage(page, currentUser.getId());
+        List<Post> allPosts = postRepository.findAll();
+        List<Post> posts = PostFunctional.POST_BY_AUTHOR.apply(allPosts, currentUser.getId(), pageable);
+        return this.mapPage(new PageImpl<>(posts, pageable, allPosts.size()), currentUser.getId());
     }
 
     @Override
@@ -156,15 +157,18 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostDTO> getTimelinePosts(UserPrincipal currentUser, Pageable page) {
-        List<String> authors = new ArrayList<>();
-        authors.add(currentUser.getId());
-        Document document = userRepository.findFollowings(currentUser.getId());
-        List<String> followings = (List<String>) document.get("followings");
-        if (followings!= null && !followings.isEmpty()) {
-            authors.addAll(followings);
-        }
-        Page<Post> posts = postRepository.findByAuthorIn(authors, page);
-        return this.mapPage(posts, currentUser.getId());
+//        List<String> authors = new ArrayList<>();
+//        authors.add(currentUser.getId());
+//        Document document = userRepository.findFollowings(currentUser.getId());
+//        List<String> followings = (List<String>) document.get("followings");
+//        if (followings!= null && !followings.isEmpty()) {
+//            authors.addAll(followings);
+//        }
+//        Page<Post> posts = postRepository.findByAuthorIn(authors, page);
+        List<Post> allPosts =  postRepository.findAll();
+
+        List<Post> post = PostFunctional.TIMELINE_POSTS.apply(allPosts, userRepository.findById(currentUser.getId()).get());
+        return this.mapPage(new PageImpl<>(post, page, allPosts.size()), currentUser.getId());
     }
 
     @Override
@@ -182,9 +186,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public long getNumOfPosts(LocalDate date) {
-        LocalDateTime start = LocalDateTime.of(date, LocalTime.of(0, 0, 0));
-        LocalDateTime end = LocalDateTime.of(date, LocalTime.of(23, 59, 59));
-        return postRepository.countByPostedDateBetween(start, end);
+        List<Post> allPosts = postRepository.findAll();
+        return PostFunctional.NUM_OF_POSTS.apply(allPosts, date);
     }
 
     /**
