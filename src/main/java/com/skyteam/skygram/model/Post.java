@@ -107,7 +107,13 @@ public class Post {
 
     public void deleteComment(String commentId, String userId) {
         if (CollectionUtils.isEmpty(this.comments)) return;
-        for (Comment comment : this.comments) {
+
+        boolean res = PostFunctional.DELETE_COMMENT.apply(this.comments, commentId, userId);
+        if(!res){
+            throw new ResourceNotFoundException("Comment", "id", commentId);
+        }
+
+        /*for (Comment comment : this.comments) {
             if (comment.getId() != null && comment.getId().toString().equals(commentId)) {
                 if (!comment.getAuthor().getId().equals(userId)) {
                     throw new NoPermissionException();
@@ -116,7 +122,7 @@ public class Post {
                 return;
             }
         }
-        throw new ResourceNotFoundException("Comment", "id", commentId);
+        throw new ResourceNotFoundException("Comment", "id", commentId);*/
     }
 
     public void likedBy(String userId) {

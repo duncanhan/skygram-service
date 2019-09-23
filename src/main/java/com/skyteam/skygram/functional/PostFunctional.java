@@ -82,4 +82,9 @@ public class PostFunctional {
                 c.getAuthor().getId().equals(uid) ?
                 commentFunc.apply(c): false ).reduce(false, (r, i) -> i ? true: i||r);
     };
+
+    public static final TriFunction<List<Comment>, String, String, Boolean> DELETE_COMMENT = (cmts, cid, uid) ->
+            cmts.stream().map(c -> cid.equals(c.getId().toString()) &&
+                c.getAuthor().getId().equals(uid) ?
+                cmts.remove(c): false ).reduce(false, (r, i) -> i ? true: i||r);
 }
