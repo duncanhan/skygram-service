@@ -19,4 +19,10 @@ public class UserFunctional {
             .map(User::getSignupDate)
             .filter(signupDate -> signupDate.toLocalDate().equals(date))
             .count();
+
+    public static final BiFunction<List<User>, Long, List<User>> MOST_FOLLOWED_K_USERS = (users, k) -> users
+            .stream()
+            .sorted((u1, u2) -> u2.getFollowers().size() - u1.getFollowers().size())
+            .limit(k)
+            .collect(Collectors.toList());
 }
