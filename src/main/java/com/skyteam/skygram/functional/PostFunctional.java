@@ -68,4 +68,13 @@ public class PostFunctional {
             .sorted(Comparator.comparingInt(post -> post.getComments().size()))
             .limit(k)
             .collect(Collectors.toList());
+
+//  Get most liked post,  which have more than 10 comments, and one of the comments is of users with email contains ‘sky’
+    public static final TetraFunction<List<Post>, Long , Long, String, List<Post> > GET_MOST_LIKED_POSTS_HAVING_COMMENTS_FROM_EMAIL
+        = (posts, noOfPosts, noOfComments, emailString) -> posts.stream()
+        .filter(post -> post.getComments().size()>noOfComments)
+        .sorted(Comparator.comparingInt(Post::getNumOfLikes))
+        .filter(post -> post.getComments().stream().anyMatch(comment -> comment.getAuthor().getEmail().contains(emailString)))
+        .collect(Collectors.toList());
+
 }
