@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
   skygram-api:
-    image: toandc/skygram-api:0.0.1
+    image: toandc/skygram-api:0.0.9
     restart: always
     ports:
       - 9000:8080
@@ -11,3 +11,7 @@ services:
         max-size: "10m"
         max-file: "10"
 
+  skygram-web:
+    image: toandc/skygram-web:0.0.5
+    ports:
+      - 80:4200
