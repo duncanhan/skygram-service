@@ -48,4 +48,9 @@ public class PostFunctional {
     public static final BiFunction<List<Post>, String, List<Post>> GET_POST_BY_HASHTAG = (posts, s) -> posts.stream()
             .filter(post -> post.getHashtags().contains(s))
             .collect(Collectors.toList());
+
+    public static final BiFunction<List<Post>, Long, List<Post>> GET_MOST_COMMENTED_POSTS = (posts, k) -> posts.stream()
+            .sorted(Comparator.comparingInt(post -> post.getComments().size()))
+            .limit(k)
+            .collect(Collectors.toList());
 }
