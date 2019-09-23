@@ -1,5 +1,6 @@
 package com.skyteam.skygram.functional;
 
+import com.skyteam.skygram.model.Comment;
 import com.skyteam.skygram.model.Media;
 import com.skyteam.skygram.model.Comment;
 import com.skyteam.skygram.model.Post;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -68,6 +70,23 @@ public class PostFunctional {
             .sorted(Comparator.comparingInt(post -> post.getComments().size()))
             .limit(k)
             .collect(Collectors.toList());
+
+    public static final QuadriFunction<List<Comment>, String, String, String, Boolean> UPDATE_COMMENT = (cmts, cid, uid, nc) -> {
+
+        Function<Comment, Boolean> commentFunc = (c) -> {
+            c.setText(nc);
+            c.setLastModifiedDate(LocalDateTime.now());
+            return true;
+        };
+        return cmts.stream().map(c -> cid.equals(c.getId().toString()) &&
+                c.getAuthor().getId().equals(uid) ?
+                commentFunc.apply(c): false ).reduce(false, (r, i) -> i ? true: i||r);
+    };
+
+    public static final TriFunction<List<Comment>, String, String, Boolean> DELETE_COMMENT = (cmts, cid, uid) ->
+            cmts.stream().map(c -> cid.equals(c.getId().toString()) &&
+                c.getAuthor().getId().equals(uid) ?
+                cmts.remove(c): false ).reduce(false, (r, i) -> i ? true: i||r);
 
 //  Get most liked post,  which have more than 10 comments, and one of the comments is of users with email contains ‘sky’
     public static final TetraFunction<List<Post>, Long , Long, String, List<Post> > GET_MOST_LIKED_POSTS_HAVING_COMMENTS_FROM_EMAIL
