@@ -30,10 +30,7 @@ public class PostFunctional {
             .limit(page.getPageSize())
             .collect(Collectors.toList());
 
-    public static final BiFunction<List<Post>, Integer,List<String>> MOST_TRENDING_HASHTAGS = (posts, num) -> posts.stream()
-            .map(Post::getHashtags)
-            .map(strings -> strings.iterator().next())
-            .distinct()
-            .limit(num)
+    public static final BiFunction<List<Post>, String, List<Post>> GET_POST_BY_HASHTAG = (posts, s) -> posts.stream()
+            .filter(post -> post.getHashtags().contains(s))
             .collect(Collectors.toList());
 }
