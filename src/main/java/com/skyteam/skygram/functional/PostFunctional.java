@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
 public class PostFunctional {
 
     public static final BiFunction<List<Post>, User, List<Post>> TIMELINE_POSTS = (posts, user) -> posts.stream()
-            .filter(post -> post.getAuthor().equals(user.getId()) || user.getFollowings().contains(post.getAuthor()))
+            .filter(post -> post.getAuthor().equals(user) || user.getFollowings().contains(post.getAuthor().getId()))
             .sorted(Comparator.comparing(Post::getPostedDate, Comparator.reverseOrder()))
             .collect(Collectors.toList());
 
@@ -95,4 +96,13 @@ public class PostFunctional {
         .filter(post -> post.getComments().stream().anyMatch(comment -> comment.getAuthor().getEmail().contains(emailString)))
         .collect(Collectors.toList());
 
+    public static final BiFunction<List<Post>, Integer, List<String>> TOP_K_TRENDING_HASHTAGS = (posts, k) -> posts.stream()
+            .flatMap(post -> post.getHashtags().stream()
+                    .collect(Collectors.groupingBy(String::valueOf, Collectors.counting()))
+                    .entrySet()
+                    .stream()
+                    .sorted(Comparator.comparingLong(Map.Entry::getValue))
+                    .map(Map.Entry::getKey))
+            .limit(k)
+            .collect(Collectors.toList());
 }

@@ -5,29 +5,60 @@ import com.skyteam.skygram.model.Post;
 import com.skyteam.skygram.model.User;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static com.skyteam.skygram.functional.PostFunctional.MOST_LIKED_K_POSTS;
 import static com.skyteam.skygram.functional.PostFunctional.TOP_K_COMMENTS_BY_LENGTH_FOR_USER_ON_DATE;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PostFunctionalTest {
 
-    List<Post> posts = new ArrayList<>();
+    private static List<Post> posts;
+
+    private static User user;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        posts = spy(new ArrayList<>());
+
+        user = mock(User.class);
+        when(user.getFollowings()).thenReturn(new HashSet<>(Arrays.asList("user2")));
+        Post post1 = mock(Post.class);
+        when(post1.getAuthor()).thenReturn(user);
+        when(post1.getPostedDate()).thenReturn(LocalDateTime.of(2010, 9, 23, 10, 0, 0));
+        posts.add(post1);
+        verify(posts).add(post1);
+
+        User user2 = mock(User.class);
+        when(user2.getId()).thenReturn("user2");
+        when(user2.getFollowings()).thenReturn(new HashSet<>(Arrays.asList("user")));
+        Post post2 = mock(Post.class);
+        when(post2.getAuthor()).thenReturn(user2);
+        when(post2.getPostedDate()).thenReturn(LocalDateTime.of(2010, 9, 23, 18, 0, 0));
+        posts.add(post2);
+        verify(posts).add(post2);
+    }
 
     @Before
     public void setUp() throws Exception {
-        for (int i = 1; i < 11; i++) {
-            Post post = new Post();
-            LocalDateTime testDate = LocalDateTime.of(2019, 7, i, 19, i, 21);
-            post.setPostedDate(testDate);
-            posts.add(post);
-        }
+//        for (int i = 1; i < 11; i++) {
+//            Post post = new Post();
+//            LocalDateTime testDate = LocalDateTime.of(2019, 7, i, 19, i, 21);
+//            post.setPostedDate(testDate);
+//            posts.add(post);
+//        }
     }
 
     @After
@@ -78,4 +109,9 @@ public class PostFunctionalTest {
         assertTrue(topKCommentsByLengthForUserOnDate.get(0).equals(testComments.get(9)));
     }
 
+    @Test
+    public void test_TIMELINE_POSTS() throws Exception {
+        List<Post> ps = PostFunctional.TIMELINE_POSTS.apply(posts, user);
+        assertEquals(2, ps.size());
+    }
 }
