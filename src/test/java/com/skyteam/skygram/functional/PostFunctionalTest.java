@@ -12,10 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static com.skyteam.skygram.functional.PostFunctional.MOST_LIKED_K_POSTS;
 import static com.skyteam.skygram.functional.PostFunctional.TOP_K_COMMENTS_BY_LENGTH_FOR_USER_ON_DATE;
@@ -34,10 +31,13 @@ public class PostFunctionalTest {
         posts = spy(new ArrayList<>());
 
         user = mock(User.class);
+        user.setEmail("sky@skyteam.com");
         when(user.getFollowings()).thenReturn(new HashSet<>(Arrays.asList("user2")));
         Post post1 = mock(Post.class);
         when(post1.getAuthor()).thenReturn(user);
         when(post1.getPostedDate()).thenReturn(LocalDateTime.of(2010, 9, 23, 10, 0, 0));
+        when(post1.getHashtags()).thenReturn(new HashSet<>(Arrays.asList("#hoping", "#sleep")));
+        when(post1.getNumOfLikes()).thenReturn(10);
         posts.add(post1);
         verify(posts).add(post1);
 
@@ -47,6 +47,17 @@ public class PostFunctionalTest {
         Post post2 = mock(Post.class);
         when(post2.getAuthor()).thenReturn(user2);
         when(post2.getPostedDate()).thenReturn(LocalDateTime.of(2010, 9, 23, 18, 0, 0));
+        when(post2.getHashtags()).thenReturn(new HashSet<>(Arrays.asList("#hoping", "#sleep", "#save")));
+        when(post2.getNumOfLikes()).thenReturn(50);
+
+        Comment comment1 = mock(Comment.class);
+        when(comment1.getAuthor()).thenReturn(user);
+        when(comment1.getAuthor().getEmail()).thenReturn("mark@gmail.com");
+        Comment comment2 = mock(Comment.class);
+        when(comment2.getAuthor()).thenReturn(user);
+        when(comment2.getAuthor().getEmail()).thenReturn("sky@skygram.com");
+        when(post2.getComments()).thenReturn(Arrays.asList(comment1,comment2));
+
         posts.add(post2);
         verify(posts).add(post2);
     }
@@ -113,5 +124,30 @@ public class PostFunctionalTest {
     public void test_TIMELINE_POSTS() throws Exception {
         List<Post> ps = PostFunctional.TIMELINE_POSTS.apply(posts, user);
         assertEquals(2, ps.size());
+    }
+
+    @Test
+    public void get_POST_BY_HASHTAG(){
+        List<Post> returned = PostFunctional.GET_POST_BY_HASHTAG.apply(posts,"#hoping");
+        assertNotNull("Result should not be null", returned);
+        assertEquals("Expected Size should be two",2,returned.size());
+    }
+
+    @Test
+    public void get_MOST_COMMENTED_POSTS(){
+        posts.forEach(post -> post.getComments().add(mock(Comment.class)));
+        List<Post> returned = PostFunctional.GET_MOST_COMMENTED_POSTS.apply(posts, (long) 1);
+        assertNotNull("Result should not be null", returned);
+        assertNotEquals("Result should not be zero if there are comments",0,returned.size());
+        assertEquals("Expected Size should be One",1,returned.size());
+    }
+
+    @Test
+    public void get_MOST_LIKED_POSTS_HAVING_COMMENTS_FROM_EMAIL(){
+        List<Post> returned = PostFunctional.GET_MOST_LIKED_POSTS_HAVING_COMMENTS_FROM_EMAIL
+                .apply(posts, (long) 1, (long)1, "sky");
+        assertNotNull("Result should not be null", returned);
+        assertNotEquals("Result should not be zero if there are comments",0,returned.size());
+        assertEquals("Expected Size should be One",1,returned.size());
     }
 }

@@ -88,7 +88,7 @@ public class PostFunctional {
                 c.getAuthor().getId().equals(uid) ?
                 cmts.remove(c): false ).reduce(false, (r, i) -> i ? true: i||r);
 
-//  Get most liked post,  which have more than 10 comments, and one of the comments is of users with email contains ‘sky’
+//  Get most liked post,  which have more than x comments, and one of the comments is of users with email contains ‘sky’
     public static final TetraFunction<List<Post>, Long , Long, String, List<Post> > GET_MOST_LIKED_POSTS_HAVING_COMMENTS_FROM_EMAIL
         = (posts, noOfPosts, noOfComments, emailString) -> posts.stream()
         .filter(post -> post.getComments().size()>noOfComments)
