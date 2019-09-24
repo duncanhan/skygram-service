@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
 public class PostFunctional {
 
     public static final BiFunction<List<Post>, User, List<Post>> TIMELINE_POSTS = (posts, user) -> posts.stream()
-            .filter(post -> post.getAuthor().equals(user.getId()) || user.getFollowings().contains(post.getAuthor()))
+            .filter(post -> post.getAuthor().equals(user) || user.getFollowings().contains(post.getAuthor().getId()))
             .sorted(Comparator.comparing(Post::getPostedDate, Comparator.reverseOrder()))
             .collect(Collectors.toList());
 
@@ -53,14 +54,14 @@ public class PostFunctional {
 
     public static final BiFunction<List<Post>, Long, List<Post>> MOST_LIKED_K_POSTS = (posts, k) -> posts
             .stream()
-            .sorted((p1, p2) -> p2.getLikes() == null ? 0 : p2.getLikes().size() - p1.getLikes().size())
+            .sorted((p1, p2) -> p2.getLikes().size() - p1.getLikes().size())
             .limit(k)
             .collect(Collectors.toList());
 
     public static final TetraFunction<User, List<Post>, LocalDate, Long, List<Comment>> TOP_K_COMMENTS_BY_LENGTH_FOR_USER_ON_DATE = (user, posts, date, k) -> posts
             .stream()
-            .filter(p -> p.getAuthor().equals(user) && p.getPostedDate().toLocalDate().equals(date))
             .flatMap(p -> p.getComments().stream())
+            .filter(c -> c.getAuthor() != null && c.getAuthor().equals(user) && c.getCreatedDate() != null && c.getCreatedDate().toLocalDate().equals(date))
             .sorted((c1, c2) -> c2.getText().length() - c1.getText().length())
             .limit(k)
             .collect(Collectors.toList());
@@ -88,4 +89,22 @@ public class PostFunctional {
             cmts.stream().map(c -> cid.equals(c.getId().toString()) &&
                 c.getAuthor().getId().equals(uid) ?
                 cmts.remove(c): false ).reduce(false, (r, i) -> i ? true: i||r);
+
+//  Get most liked post,  which have more than x comments, and one of the comments is of users with email contains ‘sky’
+    public static final TetraFunction<List<Post>, Long , Long, String, List<Post> > GET_MOST_LIKED_POSTS_HAVING_COMMENTS_FROM_EMAIL
+        = (posts, noOfPosts, noOfComments, emailString) -> posts.stream()
+        .filter(post -> post.getComments().size()>noOfComments)
+        .sorted(Comparator.comparingInt(Post::getNumOfLikes))
+        .filter(post -> post.getComments().stream().anyMatch(comment -> comment.getAuthor().getEmail().contains(emailString)))
+        .collect(Collectors.toList());
+
+    public static final BiFunction<List<Post>, Integer, List<String>> TOP_K_TRENDING_HASHTAGS = (posts, k) -> posts.stream()
+            .flatMap(post -> post.getHashtags().stream()
+                    .collect(Collectors.groupingBy(String::valueOf, Collectors.counting()))
+                    .entrySet()
+                    .stream()
+                    .sorted(Comparator.comparingLong(Map.Entry::getValue))
+                    .map(Map.Entry::getKey))
+            .limit(k)
+            .collect(Collectors.toList());
 }
