@@ -7,22 +7,18 @@ import com.skyteam.skygram.security.UserPrincipal;
 import com.skyteam.skygram.service.PostService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.junit.BeforeClass;
-
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 import static com.skyteam.skygram.functional.PostFunctional.MOST_LIKED_K_POSTS;
 import static com.skyteam.skygram.functional.PostFunctional.TOP_K_COMMENTS_BY_LENGTH_FOR_USER_ON_DATE;
@@ -100,6 +96,12 @@ public class PostFunctionalTest {
         a.setId(new ObjectId(COMMENT_ID));
         a.setAuthor(author);
         a.setText("huhuhu");
+        b.setId(new ObjectId("5d7e4b3224bb9a0001f18bb9"));
+        b.setAuthor(author);
+        b.setText("huhuhu");
+        c.setId(new ObjectId("5d7e4b3224aa9a0001f18bb5"));
+        c.setAuthor(author);
+        c.setText("huhuhu");
         cmts.add(a);
         cmts.add(b);
         cmts.add(c);
@@ -183,5 +185,10 @@ public class PostFunctionalTest {
     @Test
     public void testUPDATE_COMMENT() throws Exception{
         assert(PostFunctional.UPDATE_COMMENT.apply(cmts, COMMENT_ID, AUTHOR_ID, "test 1") );
+    }
+
+    @Test
+    public void testDELETE_COMMENT() throws Exception {
+        assert(PostFunctional.DELETE_COMMENT.apply(cmts, COMMENT_ID, AUTHOR_ID).size() != cmts.size() );
     }
 }

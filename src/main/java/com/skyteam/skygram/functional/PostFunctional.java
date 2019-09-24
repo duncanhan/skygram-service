@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -85,10 +86,10 @@ public class PostFunctional {
                 commentFunc.apply(c): 0 ).anyMatch(any -> any==1);
     };
 
-    public static final TriFunction<List<Comment>, String, String, Boolean> DELETE_COMMENT = (cmts, cid, uid) ->
-            cmts.stream().map(c -> cid.equals(c.getId().toString()) &&
+    public static final TriFunction<List<Comment>, String, String, List<Comment>> DELETE_COMMENT = (comments, cid, uid) ->
+            new ArrayList<Comment>(comments).stream().filter(c -> cid.equals(c.getId().toString()) &&
                 c.getAuthor().getId().equals(uid) ?
-                cmts.remove(c): false ).reduce(false, (r, i) -> i ? true: i||r);
+                    false: true ).collect(Collectors.toList());
 
 //  Get most liked post,  which have more than x comments, and one of the comments is of users with email contains ‘sky’
     public static final TetraFunction<List<Post>, Long , Long, String, List<Post> > GET_MOST_LIKED_POSTS_HAVING_COMMENTS_FROM_EMAIL

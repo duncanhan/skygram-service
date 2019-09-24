@@ -3,7 +3,6 @@ package com.skyteam.skygram.model;
 import com.mongodb.lang.NonNull;
 import com.mongodb.lang.Nullable;
 import com.skyteam.skygram.dto.CommentRequestDTO;
-import com.skyteam.skygram.exception.NoPermissionException;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
 import com.skyteam.skygram.functional.PostFunctional;
 import lombok.Getter;
@@ -22,8 +21,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 @Getter
 @Setter
@@ -107,10 +104,12 @@ public class Post {
 
     public void deleteComment(String commentId, String userId) {
         if (CollectionUtils.isEmpty(this.comments)) return;
+        List<Comment> new_list = PostFunctional.DELETE_COMMENT.apply(this.comments, commentId, userId) ;
 
-        boolean res = PostFunctional.DELETE_COMMENT.apply(this.comments, commentId, userId);
-        if(!res){
+        if(new_list.size() == this.comments.size()){
             throw new ResourceNotFoundException("Comment", "id", commentId);
+        }else{
+            this.comments = new_list;
         }
 
         /*for (Comment comment : this.comments) {
