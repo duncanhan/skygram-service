@@ -2,7 +2,6 @@ package com.skyteam.skygram.functional;
 
 import com.skyteam.skygram.model.Comment;
 import com.skyteam.skygram.model.Media;
-import com.skyteam.skygram.model.Comment;
 import com.skyteam.skygram.model.Post;
 import com.skyteam.skygram.model.User;
 import com.skyteam.skygram.service.impl.PostServiceImpl;
@@ -54,14 +53,14 @@ public class PostFunctional {
 
     public static final BiFunction<List<Post>, Long, List<Post>> MOST_LIKED_K_POSTS = (posts, k) -> posts
             .stream()
-            .sorted((p1, p2) -> p2.getLikes() == null ? 0 : p2.getLikes().size() - p1.getLikes().size())
+            .sorted((p1, p2) -> p2.getLikes().size() - p1.getLikes().size())
             .limit(k)
             .collect(Collectors.toList());
 
     public static final TetraFunction<User, List<Post>, LocalDate, Long, List<Comment>> TOP_K_COMMENTS_BY_LENGTH_FOR_USER_ON_DATE = (user, posts, date, k) -> posts
             .stream()
-            .filter(p -> p.getAuthor().equals(user) && p.getPostedDate().toLocalDate().equals(date))
             .flatMap(p -> p.getComments().stream())
+            .filter(c -> c.getAuthor() != null && c.getAuthor().equals(user) && c.getCreatedDate() != null && c.getCreatedDate().toLocalDate().equals(date))
             .sorted((c1, c2) -> c2.getText().length() - c1.getText().length())
             .limit(k)
             .collect(Collectors.toList());
