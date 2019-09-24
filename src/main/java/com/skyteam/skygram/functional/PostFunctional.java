@@ -2,7 +2,6 @@ package com.skyteam.skygram.functional;
 
 import com.skyteam.skygram.model.Comment;
 import com.skyteam.skygram.model.Media;
-import com.skyteam.skygram.model.Comment;
 import com.skyteam.skygram.model.Post;
 import com.skyteam.skygram.model.User;
 import com.skyteam.skygram.service.impl.PostServiceImpl;
@@ -71,16 +70,18 @@ public class PostFunctional {
             .limit(k)
             .collect(Collectors.toList());
 
-    public static final QuadriFunction<List<Comment>, String, String, String, Boolean> UPDATE_COMMENT = (cmts, cid, uid, nc) -> {
+    public static final QuadriFunction<List<Comment>, String, String, String, Boolean> UPDATE_COMMENT = (comments, cid, uid, nc) -> {
 
-        Function<Comment, Boolean> commentFunc = (c) -> {
+        Function<Comment, Integer> commentFunc = (c) -> { // (comments, comment_id, user_id, new_comment)
             c.setText(nc);
             c.setLastModifiedDate(LocalDateTime.now());
-            return true;
+            return 1;
         };
-        return cmts.stream().map(c -> cid.equals(c.getId().toString()) &&
+
+        Stream<Comment> x = comments.stream();
+        return x.map(c -> cid.equals(c.getId().toString()) &&
                 c.getAuthor().getId().equals(uid) ?
-                commentFunc.apply(c): false ).reduce(false, (r, i) -> i ? true: i||r);
+                commentFunc.apply(c): 0 ).anyMatch(any -> any==1);
     };
 
     public static final TriFunction<List<Comment>, String, String, Boolean> DELETE_COMMENT = (cmts, cid, uid) ->
