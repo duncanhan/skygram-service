@@ -53,8 +53,8 @@ public class UserFunctional {
     public static final BiFunction<Set<String>, Set<String>, Long> UNION = (ids1, ids2) ->
             ids1.stream().filter(ids2::contains).count();
 
-    public static final BiFunction<Set<String>, Set<String>, Double> RATING = (ids1, ids2) ->
-            (double) UNION.apply(ids1, ids2) / (Stream.concat(ids1.stream(), ids2.stream()).count() - UNION.apply(ids1, ids2));
+//    public static final BiFunction<Set<String>, Set<String>, Double> RATING = (ids1, ids2) ->
+//            (double) UNION.apply(ids1, ids2) / (Stream.concat(ids1.stream(), ids2.stream()).count() - UNION.apply(ids1, ids2));
 
     /**
      * Get top k suggested users based on number of mutual following
@@ -62,7 +62,7 @@ public class UserFunctional {
     public static final TriFunction<List<User>, User, Integer, List<User>> TOP_K_SUGGESTION_USERS = (users, user, k) ->
             users.stream()
                     .filter(u -> !u.equals(user) && !user.getFollowings().contains(u.getId()))
-                    .sorted(Comparator.comparing(u -> RATING.apply(u.getFollowings(), user.getFollowings()), Comparator.reverseOrder()))
+                    .sorted(Comparator.comparing(u -> UNION.apply(u.getFollowings(), user.getFollowings()), Comparator.reverseOrder()))
                     .limit(k)
                     .collect(Collectors.toList());
 

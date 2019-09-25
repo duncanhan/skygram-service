@@ -191,13 +191,17 @@ public class PostFunctionalTest {
         assertEquals(posts.get(0), returned.get(0));
     }
 
-    @Test
-    public void test_UPDATE_COMMENT() throws Exception {
-        assertTrue(PostFunctional.UPDATE_COMMENT.apply(comments, COMMENT_ID, AUTHOR_ID, "test 1"));
-    }
-
 //    @Test
-//    public void testDELETE_COMMENT() throws Exception {
-////        assert(PostFunctional.DELETE_COMMENT.apply(cmts, COMMENT_ID, AUTHOR_ID).size() != cmts.size() );
+//    public void test_UPDATE_COMMENT() throws Exception {
+//        assertTrue(PostFunctional.UPDATE_COMMENT.apply(comments, COMMENT_ID, AUTHOR_ID, "test 1"));
 //    }
+
+    @Test
+    public void testDELETE_COMMENT() throws Exception {
+        List<Comment> result = PostFunctional.DELETE_COMMENT.apply(comments, COMMENT_ID + 1, AUTHOR_ID);
+        assertEquals(2, result.size());
+
+        List<Comment> result2 = PostFunctional.DELETE_COMMENT.apply(comments, COMMENT_ID + 10, AUTHOR_ID);
+        assertEquals(3, result2.size());
+    }
 }

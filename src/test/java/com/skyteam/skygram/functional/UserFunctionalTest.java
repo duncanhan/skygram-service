@@ -114,14 +114,6 @@ public class UserFunctionalTest {
     }
 
     @Test
-    public void test_RATING() throws Exception {
-        Set<String> set1 = new HashSet<>(Arrays.asList("1", "2", "3", "4", "99", "100"));
-        Set<String> set2 = new HashSet<>(Arrays.asList("1", "2", "5", "6", "66", "101"));
-        double rating = UserFunctional.RATING.apply(set1, set2);
-        assertEquals(0.2, rating, 0.0);
-    }
-
-    @Test
     public void test_TOP_K_SUGGESTION_USERS() throws Exception {
         User user = new User("user5");
         user.follow(users.get(0));

@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +58,20 @@ public class PostFunctional {
                             .collect(Collectors.toList()), page);
 
     /**
+     * Get top most popular hashtags
+     */
+    public static final BiFunction<List<Post>, Integer, List<String>> TOP_K_TRENDING_HASHTAGS = (posts, k) ->
+            posts.stream()
+                    .flatMap(post -> post.getHashtags().stream())
+                    .collect(Collectors.groupingBy(String::valueOf, Collectors.counting()))
+                    .entrySet()
+                    .stream()
+                    .sorted(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()))
+                    .map(Map.Entry::getKey)
+                    .limit(k)
+                    .collect(Collectors.toList());
+
+    /**
      * Update post pipeline
      */
     public static final TriFunction<MultipartFile[], Post, PostServiceImpl, Post> UPDATE_POST = (files, post, serv) -> {
@@ -98,8 +111,8 @@ public class PostFunctional {
     public static final TetraFunction<User, List<Post>, LocalDate, Long, List<Comment>> TOP_K_COMMENTS_BY_LENGTH_FOR_USER_ON_DATE = (user, posts, date, k) ->
             posts.stream()
                     .flatMap(p -> p.getComments().stream())
-                    .filter(c ->c.getAuthor().equals(user) && c.getCreatedDate() != null && c.getCreatedDate().toLocalDate().equals(date))
-                    .sorted((c1, c2) -> c2.getText().length() - c1.getText().length())
+                    .filter(c -> c.getAuthor().equals(user) && c.getCreatedDate() != null && c.getCreatedDate().toLocalDate().equals(date))
+                    .sorted(Comparator.comparing(c -> c.getText().length(), Comparator.reverseOrder()))
                     .limit(k)
                     .collect(Collectors.toList());
 
@@ -129,9 +142,10 @@ public class PostFunctional {
     };
 
     public static final TriFunction<List<Comment>, String, String, List<Comment>> DELETE_COMMENT = (comments, cid, uid) ->
-            new ArrayList<>(comments).stream()
-                    .filter(c -> cid.equals(c.getId().toString()) &&
-                            !c.getAuthor().getId().equals(uid)).collect(Collectors.toList());
+            comments.stream()
+                    .filter(c -> !(cid.equals(c.getId().toString()) &&
+                            c.getAuthor().getId().equals(uid)))
+                    .collect(Collectors.toList());
 
     /**
      * Get most liked post,  which have more than x comments,
@@ -144,20 +158,6 @@ public class PostFunctional {
                     .filter(post -> post.getComments().stream().anyMatch(comment -> comment.getAuthor().getEmail().contains(emailString)))
                     .sorted(Comparator.comparing(Post::getNumOfLikes, Comparator.reverseOrder()))
                     .limit(noOfPosts)
-                    .collect(Collectors.toList());
-
-    /**
-     * Get top most popular hashtags
-     */
-    public static final BiFunction<List<Post>, Integer, List<String>> TOP_K_TRENDING_HASHTAGS = (posts, k) ->
-            posts.stream()
-                    .flatMap(post -> post.getHashtags().stream())
-                    .collect(Collectors.groupingBy(String::valueOf, Collectors.counting()))
-                    .entrySet()
-                    .stream()
-                    .sorted(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()))
-                    .map(Map.Entry::getKey)
-                    .limit(k)
                     .collect(Collectors.toList());
 
     /**
