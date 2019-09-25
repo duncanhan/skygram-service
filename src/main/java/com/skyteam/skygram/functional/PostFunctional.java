@@ -74,7 +74,7 @@ public class PostFunctional {
     /**
      * Update post pipeline
      */
-    public static final TriFunction<MultipartFile[], Post, PostServiceImpl, Post> UPDATE_POST = (files, post, serv) -> {
+    public static final TriFunction<MultipartFile[], Post, Media, Post> UPDATE_POST = (files, post, serv) -> {
         String postId = post.getId();
         BiFunction<Object, Integer, Object> check = (f, c) -> {
             try {
