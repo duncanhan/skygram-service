@@ -128,10 +128,10 @@ public class PostFunctional {
     /**
      * Update comment
      */
-    public static final QuadriFunction<List<Comment>, String, String, String, Boolean> UPDATE_COMMENT = (comments, cid, uid, nc) -> {
+    public static final FiveFunctional<LocalDateTime, List<Comment>, String, String, String, Boolean> UPDATE_COMMENT = (new_date, comments, cid, uid, nc) -> {
         Function<Comment, Integer> commentFunc = (c) -> { // (comments, comment_id, user_id, new_comment)
             c.setText(nc);
-            c.setLastModifiedDate(LocalDateTime.now());
+            c.setLastModifiedDate(new_date); // LocalDateTime.now()
             return 1;
         };
 

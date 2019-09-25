@@ -191,10 +191,10 @@ public class PostFunctionalTest {
         assertEquals(posts.get(0), returned.get(0));
     }
 
-//    @Test
-//    public void test_UPDATE_COMMENT() throws Exception {
-//        assertTrue(PostFunctional.UPDATE_COMMENT.apply(comments, COMMENT_ID, AUTHOR_ID, "test 1"));
-//    }
+    @Test
+    public void test_UPDATE_COMMENT() throws Exception {
+        assertTrue(PostFunctional.UPDATE_COMMENT.apply(LocalDateTime.now(),comments, COMMENT_ID, AUTHOR_ID, "test 1"));
+    }
 
     @Test
     public void testDELETE_COMMENT() throws Exception {

@@ -84,10 +84,10 @@ public class Post {
         if (CollectionUtils.isEmpty(this.comments)) return;
         String newComment = commentRequestDTO.getText();
 
-//        boolean res = PostFunctional.UPDATE_COMMENT.apply(this.comments, commentId, userId, newComment);
-//        if (!res) {
-//            throw new ResourceNotFoundException("Comment", "id", commentId);
-//        }
+        boolean res = PostFunctional.UPDATE_COMMENT.apply(LocalDateTime.now(), this.comments, commentId, userId, newComment);
+        if (!res) {
+            throw new ResourceNotFoundException("Comment", "id", commentId);
+       }
         /*for (Comment comment : this.comments) {
             if (comment.getId().toString().equals(commentId)) {
                 if (!comment.getAuthor().getId().equals(userId)) {
