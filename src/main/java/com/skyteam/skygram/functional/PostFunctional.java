@@ -128,17 +128,17 @@ public class PostFunctional {
     /**
      * Update comment
      */
-    public static final FiveFunctional<LocalDateTime, List<Comment>, String, String, String, Boolean> UPDATE_COMMENT = (new_date, comments, cid, uid, nc) -> {
-        Function<Comment, Integer> commentFunc = (c) -> { // (comments, comment_id, user_id, new_comment)
+    public static final FiveFunctional<LocalDateTime, List<Comment>, String, String, String, List<Comment>> UPDATE_COMMENT = (new_date, comments, cid, uid, nc) -> {
+        Function<Comment, Comment> commentFunc = (c) -> { // (comments, comment_id, user_id, new_comment)
             c.setText(nc);
             c.setLastModifiedDate(new_date); // LocalDateTime.now()
-            return 1;
+            return c;
         };
 
         Stream<Comment> x = comments.stream();
         return x.map(c -> cid.equals(c.getId().toString()) &&
                 c.getAuthor().getId().equals(uid) ?
-                commentFunc.apply(c) : 0).anyMatch(any -> any == 1);
+                commentFunc.apply(c) : c).collect(Collectors.toList());
     };
 
     public static final TriFunction<List<Comment>, String, String, List<Comment>> DELETE_COMMENT = (comments, cid, uid) ->

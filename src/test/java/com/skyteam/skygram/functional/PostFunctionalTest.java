@@ -193,7 +193,9 @@ public class PostFunctionalTest {
 
     @Test
     public void test_UPDATE_COMMENT() throws Exception {
-        assertTrue(PostFunctional.UPDATE_COMMENT.apply(LocalDateTime.now(),comments, COMMENT_ID, AUTHOR_ID, "test 1"));
+        List<Comment> new_comments = PostFunctional.UPDATE_COMMENT
+                .apply(LocalDateTime.now(),comments, COMMENT_ID+1, AUTHOR_ID, "test 1");
+        assert(new_comments.get(0).getText() == "test 1");
     }
 
     @Test
