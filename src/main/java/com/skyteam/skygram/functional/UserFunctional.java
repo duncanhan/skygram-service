@@ -1,11 +1,13 @@
 package com.skyteam.skygram.functional;
 
 import com.skyteam.skygram.dto.SearchResponseDTO;
+import com.skyteam.skygram.model.Post;
 import com.skyteam.skygram.model.User;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,4 +48,16 @@ public class UserFunctional {
             users.stream()
                     .filter(u -> user1.getFollowers().contains(u.getId()) && user2.getFollowers().contains(u.getId()))
                     .collect(Collectors.toList());
+
+    public static final TriFunction<List<User>, List<Post>, Long, Long> NUM_OF_USERS_HAVE_NUM_OF_POSTS = (users, posts, k) -> users.stream()
+            .filter(user -> posts.stream().filter(post -> post.getAuthor().equals(user)).count() > k).count();
+
+    public static final BiFunction<List<User>, Integer, List<User>> USER_HAVE_MORE_THAN_K_FOLLOWERS = (users, k) -> users.stream()
+            .filter(user -> user.getFollowers().size() >= k).collect(Collectors.toList());
+
+    public static final BiFunction<List<User>, String, List<User>> FIND_USER = (users, string) -> users.stream()
+            .filter(user -> user.getUsername().toLowerCase().contains(string.toLowerCase())
+                    || user.getFirstName().toLowerCase().contains(string.toLowerCase())
+                    || user.getLastName().toLowerCase().contains(string.toLowerCase()))
+            .collect(Collectors.toList());
 }
