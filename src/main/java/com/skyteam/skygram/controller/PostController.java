@@ -156,4 +156,44 @@ public class PostController {
                                   @PathVariable("id") String postId) {
         return ResponseBuilder.buildSuccess(postService.getPostDetail(currentUser, postId));
     }
+
+    @ApiOperation(value = "Get posts by hashtags", authorizations = {@Authorization(value = "apiKey")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "errors")})
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getPostByHashtag(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                     @RequestParam("hashtag") String hashtag) {
+        return ResponseBuilder.buildSuccess(postService.getPostsByHashtag(hashtag));
+    }
+
+    @ApiOperation(value = "Get most liked posts", authorizations = {@Authorization(value = "apiKey")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "errors")})
+    @GetMapping(value = "/most-liked-posts", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getMostLikedPosts(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                      @RequestParam("top") int top) {
+        return ResponseBuilder.buildSuccess(postService.getMostLikedPosts(top));
+    }
+
+    @ApiOperation(value = "Get most commented posts", authorizations = {@Authorization(value = "apiKey")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "errors")})
+    @GetMapping(value = "/most-commented-posts", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getMostCommentedPosts(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                          @RequestParam("top") int top) {
+        return ResponseBuilder.buildSuccess(postService.getMostCommentedPosts(top));
+    }
+
+    @ApiOperation(value = "Get most trending hashtags", authorizations = {@Authorization(value = "apiKey")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "errors")})
+    @GetMapping(value = "/trending-hashtags", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getTrendingHashtags(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                        @RequestParam("top") int top) {
+        return ResponseBuilder.buildSuccess(postService.getMostTrendingHashtags(top));
+    }
 }

@@ -5,9 +5,10 @@ import com.skyteam.skygram.dto.SearchResponseDTO;
 import com.skyteam.skygram.dto.UserDTO;
 import com.skyteam.skygram.dto.UserRequestDTO;
 import com.skyteam.skygram.exception.ResourceNotFoundException;
-import com.skyteam.skygram.functional.CommonFunctional;
 import com.skyteam.skygram.functional.UserFunctional;
+import com.skyteam.skygram.model.Post;
 import com.skyteam.skygram.model.User;
+import com.skyteam.skygram.repository.PostRepository;
 import com.skyteam.skygram.repository.UserRepository;
 import com.skyteam.skygram.security.UserPrincipal;
 import com.skyteam.skygram.service.UserService;
@@ -24,12 +25,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -53,16 +58,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserDTO> getListUsers(UserPrincipal currentUser, Pageable page) {
         List<User> allUsers = userRepository.findAll();
-        List<User> users = CommonFunctional.pagingUser.apply(allUsers, page);
+        List<User> users = UserFunctional.PAGING_USERS.apply(allUsers, page);
         return this.mapPage(new PageImpl<>(users, page, allUsers.size()), currentUser.getId());
     }
 
     @Override
-    public Page<SearchResponseDTO> searchForHome(String q, Pageable page) {
-//        Page<User> users = userRepository.findByUsernameStartsWith(q, page);
-//        return users.map(user -> new SearchResponseDTO(user.getId(), null, user.getUsername(), user.getFirstName() + " " + user.getLastName()));
-        //TODO
-        return null;
+    public List<SearchResponseDTO> searchForHome(UserPrincipal currentUser, String q, int top) {
+        List<User> allUsers = userRepository.findAll();
+        List<User> usersStartWith = UserFunctional.USERNAME_START_WITH.apply(allUsers, q);
+        return usersStartWith.stream()
+                .map(user -> new SearchResponseDTO(user.getId(), null, user.getUsername(), user.getFirstName() + " " + user.getLastName()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -118,8 +124,44 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public long getNumOfRegistrations(LocalDate date) {
-        List<User> users = userRepository.findAll();
-        return UserFunctional.NUM_OF_REGISTRATIONS.apply(users, date);
+        return UserFunctional.NUM_OF_REGISTRATIONS.apply(userRepository.findAll(), date);
+    }
+
+    @Override
+    public List<UserDTO> getTopMostFollowedUsers(long top) {
+        List<User> allUsers = userRepository.findAll();
+        List<User> users = UserFunctional.MOST_FOLLOWED_K_USERS.apply(allUsers, top);
+        return users.stream()
+                .map(user -> Mapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDTO> getSuggestionUsers(UserPrincipal currentUser, int top) {
+        List<User> allUsers = userRepository.findAll();
+        List<User> users = UserFunctional.TOP_K_SUGGESTION_USERS.apply(allUsers, this.get(currentUser.getId()), top);
+        return users.stream()
+                .map(user -> Mapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDTO> getMutualFollower(UserPrincipal currentUser, String username) {
+        List<User> allUsers = userRepository.findAll();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+        List<User> users = UserFunctional.MUTUAL_FOLLOWERS.apply(allUsers, this.get(currentUser.getId()), user);
+        return users.stream()
+                .map(u -> Mapper.map(u, UserDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public long getUsersHaveMoreThanPosts(UserPrincipal currentUser, int numOfPosts) {
+        List<User> allUsers = userRepository.findAll();
+        List<Post> allPosts = postRepository.findAll();
+        long num = UserFunctional.NUM_OF_USERS_HAVE_NUM_OF_POSTS.apply(allUsers, allPosts, (long) numOfPosts);
+        return num;
     }
 
     /**

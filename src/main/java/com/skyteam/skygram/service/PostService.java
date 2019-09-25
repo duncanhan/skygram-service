@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 public interface PostService {
 
@@ -29,11 +30,21 @@ public interface PostService {
 
     boolean unlike(UserPrincipal currentUser, String postId);
 
-    Page<SearchResponseDTO> searchHashtags(String q, Pageable page);
+    List<SearchResponseDTO> searchHashtags(String q, int top);
 
     Page<PostDTO> getTimelinePosts(UserPrincipal currentUser, Pageable page);
 
     PostDTO getPostDetail(UserPrincipal currentUser, String postId);
 
     long getNumOfPosts(LocalDate date);
+
+    List<PostDTO> getPostsByHashtag(String hashtag);
+
+    List<PostDTO> getMostLikedPosts(int top);
+
+    List<PostDTO> getMostCommentedPosts(int top);
+
+    List<String> getMostTrendingHashtags(int top);
+
+    List<String> getHashtagsStartWith(String q, int top);
 }

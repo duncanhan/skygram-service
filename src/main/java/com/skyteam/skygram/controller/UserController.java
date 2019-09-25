@@ -108,4 +108,44 @@ public class UserController {
         Page<PostDTO> page = postService.getPostsByUser(currentUser, username, PageUtil.initPage(pageDTO, new Sort(Direction.DESC, "date")));
         return ResponseBuilder.buildSuccess(page);
     }
+
+    @ApiOperation(value = "Get most followed users", authorizations = {@Authorization(value = "apiKey")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "Internal errors")})
+    @GetMapping(value = "/most-followed", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getMostFollowed(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                    @RequestParam("top") long top) {
+        return ResponseBuilder.buildSuccess(userService.getTopMostFollowedUsers(top));
+    }
+
+    @ApiOperation(value = "Get suggestion users", authorizations = {@Authorization(value = "apiKey")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "Internal errors")})
+    @GetMapping(value = "/suggestion", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getSuggestion(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                  @RequestParam("top") int top) {
+        return ResponseBuilder.buildSuccess(userService.getSuggestionUsers(currentUser, top));
+    }
+
+    @ApiOperation(value = "Get mutual followers", authorizations = {@Authorization(value = "apiKey")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "Internal errors")})
+    @GetMapping(value = "/{username}/mutual-followers", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getMutualFollowers(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                       @PathVariable("username") String username) {
+        return ResponseBuilder.buildSuccess(userService.getMutualFollower(currentUser, username));
+    }
+
+    @ApiOperation(value = "Get number of users that have more than k posts", authorizations = {@Authorization(value = "apiKey")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "Internal errors")})
+    @GetMapping(value = "/top-posted", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getUsersHaveMoreThanPosts(@ApiIgnore @CurrentUser UserPrincipal currentUser,
+                                              @RequestParam("num") int num) {
+        return ResponseBuilder.buildSuccess(userService.getUsersHaveMoreThanPosts(currentUser, num));
+    }
 }

@@ -33,8 +33,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -58,10 +57,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostDTO> getPostsByUser(UserPrincipal currentUser, String username, Pageable pageable) {
-        User author = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
         List<Post> allPosts = postRepository.findAll();
-        List<Post> posts = PostFunctional.POST_BY_AUTHOR.apply(allPosts, currentUser.getId(), pageable);
+        List<Post> posts = PostFunctional.POSTS_BY_AUTHOR.apply(allPosts, currentUser.getId(), pageable);
         return this.mapPage(new PageImpl<>(posts, pageable, allPosts.size()), currentUser.getId());
     }
 
@@ -153,24 +150,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<SearchResponseDTO> searchHashtags(String q, Pageable page) {
-        // TODO later
-        return null;
+    public List<SearchResponseDTO> searchHashtags(String q, int top) {
+        List<String> hashtags = PostFunctional.TOP_K_HASHTAGS_START_WITH.apply(postRepository.findAll(), q, top);
+        return hashtags.stream()
+                .map(hashtag -> new SearchResponseDTO(hashtag, null, hashtag, null))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Page<PostDTO> getTimelinePosts(UserPrincipal currentUser, Pageable page) {
-//        List<String> authors = new ArrayList<>();
-//        authors.add(currentUser.getId());
-//        Document document = userRepository.findFollowings(currentUser.getId());
-//        List<String> followings = (List<String>) document.get("followings");
-//        if (followings!= null && !followings.isEmpty()) {
-//            authors.addAll(followings);
-//        }
-//        Page<Post> posts = postRepository.findByAuthorIn(authors, page);
-        List<Post> allPosts =  postRepository.findAll();
-
-        List<Post> post = PostFunctional.TIMELINE_POSTS.apply(allPosts, userRepository.findById(currentUser.getId()).get());
+        List<Post> allPosts = postRepository.findAll();
+        List<Post> post = PostFunctional.TIMELINE_POSTS.apply(allPosts, userRepository.findById(currentUser.getId()).orElseGet(null));
         return this.mapPage(new PageImpl<>(post, page, allPosts.size()), currentUser.getId());
     }
 
@@ -189,8 +179,46 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public long getNumOfPosts(LocalDate date) {
+        return PostFunctional.NUM_OF_POSTS.apply(postRepository.findAll(), date);
+    }
+
+    @Override
+    public List<PostDTO> getPostsByHashtag(String hashtag) {
         List<Post> allPosts = postRepository.findAll();
-        return PostFunctional.NUM_OF_POSTS.apply(allPosts, date);
+        List<Post> posts = PostFunctional.POSTS_BY_HASHTAG.apply(allPosts, hashtag);
+        return posts.stream()
+                .map(post -> Mapper.map(post, PostDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostDTO> getMostLikedPosts(int top) {
+        List<Post> allPosts = postRepository.findAll();
+        List<Post> posts = PostFunctional.TOP_K_MOST_LIKED_POSTS.apply(allPosts, (long) top);
+        return posts.stream()
+                .map(post -> Mapper.map(post, PostDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostDTO> getMostCommentedPosts(int top) {
+        List<Post> allPosts = postRepository.findAll();
+        List<Post> posts = PostFunctional.GET_MOST_COMMENTED_POSTS.apply(allPosts, (long) top);
+        return posts.stream()
+                .map(post -> Mapper.map(post, PostDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getMostTrendingHashtags(int top) {
+        List<Post> allPosts = postRepository.findAll();
+        return PostFunctional.TOP_K_TRENDING_HASHTAGS.apply(allPosts, top);
+    }
+
+    @Override
+    public List<String> getHashtagsStartWith(String q, int top) {
+        List<Post> allPosts = postRepository.findAll();
+        return PostFunctional.TOP_K_HASHTAGS_START_WITH.apply(allPosts, q, top);
     }
 
     /**
@@ -238,6 +266,7 @@ public class PostServiceImpl implements PostService {
 
     /**
      * Map page post to postDTO
+     *
      * @param posts
      * @param currentUserId
      * @return

@@ -144,4 +144,12 @@ public class Post {
     public int getNumOfLikes() {
         return this.likes != null ? this.likes.size() : 0;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Post) {
+            return ((Post) obj).getId().equals(id);
+        }
+        return false;
+    }
 }

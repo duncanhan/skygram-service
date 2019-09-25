@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface UserService {
 
@@ -18,7 +19,7 @@ public interface UserService {
 
     Page<UserDTO> getListUsers(UserPrincipal currentUser, Pageable page);
 
-    Page<SearchResponseDTO> searchForHome(String q, Pageable page);
+    List<SearchResponseDTO> searchForHome(UserPrincipal currentUser, String q, int top);
 
     boolean updateUser(UserPrincipal currentUser, UserDTO userDTO);
 
@@ -29,4 +30,12 @@ public interface UserService {
     UserDTO getUser(UserPrincipal currentUser, String username);
 
     long getNumOfRegistrations(LocalDate date);
+
+    List<UserDTO> getTopMostFollowedUsers(long top);
+
+    List<UserDTO> getSuggestionUsers(UserPrincipal currentUser, int top);
+
+    List<UserDTO> getMutualFollower(UserPrincipal currentUser, String username);
+
+    long getUsersHaveMoreThanPosts(UserPrincipal currentUser, int numOfPosts);
 }
