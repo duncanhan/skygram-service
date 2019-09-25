@@ -84,10 +84,10 @@ public class Post {
         if (CollectionUtils.isEmpty(this.comments)) return;
         String newComment = commentRequestDTO.getText();
 
-        boolean res = PostFunctional.UPDATE_COMMENT.apply(this.comments, commentId, userId, newComment);
-        if(!res){
-            throw new ResourceNotFoundException("Comment", "id", commentId);
-        }
+//        boolean res = PostFunctional.UPDATE_COMMENT.apply(this.comments, commentId, userId, newComment);
+//        if (!res) {
+//            throw new ResourceNotFoundException("Comment", "id", commentId);
+//        }
         /*for (Comment comment : this.comments) {
             if (comment.getId().toString().equals(commentId)) {
                 if (!comment.getAuthor().getId().equals(userId)) {
@@ -104,11 +104,11 @@ public class Post {
 
     public void deleteComment(String commentId, String userId) {
         if (CollectionUtils.isEmpty(this.comments)) return;
-        List<Comment> new_list = PostFunctional.DELETE_COMMENT.apply(this.comments, commentId, userId) ;
+        List<Comment> new_list = PostFunctional.DELETE_COMMENT.apply(this.comments, commentId, userId);
 
-        if(new_list.size() == this.comments.size()){
+        if (new_list.size() == this.comments.size()) {
             throw new ResourceNotFoundException("Comment", "id", commentId);
-        }else{
+        } else {
             this.comments = new_list;
         }
 
