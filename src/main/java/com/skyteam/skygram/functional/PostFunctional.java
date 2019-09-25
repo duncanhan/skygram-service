@@ -70,24 +70,6 @@ public class PostFunctional {
                     .map(Map.Entry::getKey)
                     .limit(k)
                     .collect(Collectors.toList());
-
-    /**
-     * Update post pipeline
-     */
-    public static final TriFunction<MultipartFile[], Post, PostServiceImpl, Post> UPDATE_POST = (files, post, serv) -> {
-        String postId = post.getId();
-        BiFunction<Object, Integer, Object> check = (f, c) -> {
-            try {
-                return serv.upload((MultipartFile) f, c, postId);
-            } catch (Exception e) {
-                return e.getMessage();
-            }
-        };
-        Stream.iterate(0, x -> x + 1).limit(files.length)
-                .forEach(i -> post.updateMedia((Media) check.apply(files[i], i)));
-        return post;
-    };
-
     /**
      * Get posts by hashtag
      */

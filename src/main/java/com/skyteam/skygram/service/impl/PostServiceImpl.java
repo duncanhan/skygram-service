@@ -88,7 +88,13 @@ public class PostServiceImpl implements PostService {
         post.setHashtags(hashtags != null ? new HashSet<>(Arrays.asList(hashtags)) : new HashSet<>());
         post.setLastModifiedDate(LocalDateTime.now());
 
-        post = PostFunctional.UPDATE_POST.apply(files, post, this);
+//        post = PostFunctional.UPDATE_POST.apply(files, post, this);
+        Media media;
+        for (MultipartFile file : files) {
+            media = this.upload(file, 1, postId);
+            post.updateMedia(media);
+        }
+
 
         if (post.getMedia().isEmpty()) {
             throw new AppException("Please add an image");
