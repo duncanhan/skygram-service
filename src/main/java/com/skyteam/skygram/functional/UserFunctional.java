@@ -61,7 +61,7 @@ public class UserFunctional {
      */
     public static final TriFunction<List<User>, User, Integer, List<User>> TOP_K_SUGGESTION_USERS = (users, user, k) ->
             users.stream()
-                    .filter(u -> !u.equals(user) && !user.getFollowings().contains(u.getId()))
+                    .filter(u -> !u.equals(user) && UNION.apply(u.getFollowings(), user.getFollowings()) > 0)
                     .sorted(Comparator.comparing(u -> UNION.apply(u.getFollowings(), user.getFollowings()), Comparator.reverseOrder()))
                     .limit(k)
                     .collect(Collectors.toList());
